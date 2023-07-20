@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// import { invoke } from '@tauri-apps/api/tauri'
+import { 
+  HashRouter as Router,
+  Routes,
+  Route,
+  Link
+} from 'react-router-dom';
+import { ThemeProvider, createTheme} from '@mui/material'
+import React from 'react'
+import Home from './Home';
+import { HistoriesPage } from './pages/TabHistory';
 
-function App() {
+export default function App() {  
+  const theme = React.useMemo(()=>{
+    return createTheme({
+      palette:{
+        primary:{
+          main:"#304e00",
+          dark:"#1c2e00",
+          light:"#cfeca2"
+        },
+        secondary:{
+          main:"#00d5d1",
+          dark:"#00aba7",
+          light:"#bbaba7"
+        }
+      }
+    })
+  }
+  , [])
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+    <ThemeProvider theme={theme}>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/histories' element={<HistoriesPage />} />
+      </Routes>
+    </ThemeProvider>
+    </Router>
+  )
 }
-
-export default App;

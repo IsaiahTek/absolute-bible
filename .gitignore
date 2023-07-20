@@ -10,6 +10,7 @@
 
 # production
 /build
+/public/bible_versions
 
 # misc
 .DS_Store

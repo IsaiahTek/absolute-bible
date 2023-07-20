@@ -1,0 +1,1 @@
+export const arrayFrom = (length:number, offset=0, steps=1) => Array.from({length:length}, (_, i)=> i*steps+offset)
