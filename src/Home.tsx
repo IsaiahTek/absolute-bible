@@ -88,15 +88,14 @@ export default function Home() {
     setOpenTabDialog(false)
   }
   const handleEditTab = (tab:openedTab)=>{
+    setIsCreateNewTab(false)
     // Editing Existing Tab
     if(tab){
       openedTab.update(tab).then(()=>{
         fetchAndCommitOpenedTabs()
       })
-      setActiveTabID(tab.tabID)
     }
     setOpenTabDialog(false)
-    setIsCreateNewTab(false)
   }
   const handleDeleteTab = (tab_id:number, tabID:string)=>{
     openedTab.delete(tab_id)
@@ -108,13 +107,14 @@ export default function Home() {
   const [activeTabID, setActiveTabID] = useState("")
   const [openTabDialog, setOpenTabDialog] = useState(false)
   
-  const [activeTabParams, setActiveTabParams] = useState(tabParamsCollection.filter(param=>param.tabID === activeTabID)[0])
-  useEffect(()=>{
-    setActiveTabParams(tabParamsCollection.filter(param=>param.tabID === activeTabID)[0])
-  },[tabParamsCollection, activeTabID])
+  const activeTabParams = tabParamsCollection.filter(param=>param.tabID === activeTabID)[0]
+  // useEffect(()=>{
+  //   setActiveTabParams(tabParamsCollection.filter(param=>param.tabID === activeTabID)[0])
+  // },[tabParamsCollection, activeTabID])
   const activeBookName = activeTabParams?activeTabParams.bookName:null
 
   const handleClickEditTab = ()=>{
+    setIsCreateNewTab(false)
     setOpenTabDialog(true)
   }
 
@@ -134,114 +134,110 @@ export default function Home() {
   return (
     <Box>
     {
-            tabParamsCollection.length?
-          <Box role="presentation" sx={{display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto"}}>
-            <IconButton id="main_menu" color="primary" sx={{marginRight:2}} onClick={()=>setOpenMainMenu(true)}><MenuSharp /></IconButton>
-            <SwipeableDrawer anchor="left" open={openMainMenu} onOpen={()=>setOpenMainMenu(true)} onClose={()=>setOpenMainMenu(false)}>
-              <Box sx={{height:"100vh", width:250}}>
-                <List onClick={()=>setOpenMainMenu(false)} onKeyDown={()=>setOpenMainMenu(false)}>
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={()=>navigate("/histories")}>
-                      <ListItemIcon><History /></ListItemIcon>
-                      <ListItemText>Histories</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton>
-                      <ListItemIcon><Note /></ListItemIcon>
-                      <ListItemText>Notes</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton>
-                      <ListItemIcon><SearchRounded /></ListItemIcon>
-                      <ListItemText>Search</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton>
-                      <ListItemIcon><HourglassBottomRounded /></ListItemIcon>
-                      <ListItemText>Study Plan</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                  <Divider />
-                  <ListItem disablePadding>
-                    <ListItemButton>
-                      <ListItemIcon><Settings /></ListItemIcon>
-                      <ListItemText>Settings</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                </List>
-              </Box>
-            </SwipeableDrawer>
-            <>
-            {
-              tabParamsCollection.map((tab, id)=>
-                <Fragment key={tab.tabID}>
-                  <Box key={tab.tabID+"box"} sx={{backgroundColor:tab.tabID===activeTabID?theme.palette.primary.main:"inherit", color:tab.tabID===activeTabID?"white":theme.palette.primary.main, paddingBottom:"2px", whiteSpace:"nowrap"}}>
-                    <Button onClick={()=>setActiveTabID(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
-                      {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
-                    </Button>
-                    <TabMenu tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
-                  </Box>
-                  <Divider key={tab.tabID+"-divider"} orientation="vertical" flexItem role="presentation" />
-                </Fragment>
-              )
-            }
-              <Box>
-                <IconButton color="primary" onClick={()=>handleAddTab()}><Add color="primary" /></IconButton>
-              </Box>
-            </>
+      tabParamsCollection.length?
+      <Box role="presentation" sx={{display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto"}}>
+        <IconButton id="main_menu" color="primary" sx={{marginRight:2}} onClick={()=>setOpenMainMenu(true)}><MenuSharp /></IconButton>
+        <SwipeableDrawer anchor="left" open={openMainMenu} onOpen={()=>setOpenMainMenu(true)} onClose={()=>setOpenMainMenu(false)}>
+          <Box sx={{height:"100vh", width:250}}>
+            <List onClick={()=>setOpenMainMenu(false)} onKeyDown={()=>setOpenMainMenu(false)}>
+              <ListItem disablePadding>
+                <ListItemButton onClick={()=>navigate("/histories")}>
+                  <ListItemIcon><History /></ListItemIcon>
+                  <ListItemText>Histories</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon><Note /></ListItemIcon>
+                  <ListItemText>Notes</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon><SearchRounded /></ListItemIcon>
+                  <ListItemText>Search</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon><HourglassBottomRounded /></ListItemIcon>
+                  <ListItemText>Study Plan</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <Divider />
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon><Settings /></ListItemIcon>
+                  <ListItemText>Settings</ListItemText>
+                </ListItemButton>
+              </ListItem>
+            </List>
           </Box>
-            :
-            <>
-            <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%", height:"100vh"}}>
-              <Box sx={{width:"360px", maxWidth:"90%"}}>
-                <Box sx={{marginBottom:10}}>
-                  <Typography variant="h4" textAlign="center" style={{color:theme.palette.primary.main, fontWeight:"bold"}} >Absolute Bible</Typography>
-                  <Typography textAlign="center" variant="body2">Multilingual & Multi-version such as:</Typography>
-                  <Typography color="secondary.light" textAlign="center" variant="subtitle2">MSG | AMP | NLT ...</Typography>
-                </Box>
-                <Card>
-                  <CardMedia component="img" image="bible-study.webp" sx={{height:"150px"}} alt="Read Bible" />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5">Study</Typography>
-                    <Typography variant="body2" >Study to show yourself approve unto GOD ...</Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button onClick={()=>handleAddTab()} variant="contained">Open Bible</Button>
-                    <Button onClick={()=>navigate("/histories")}>App Histories</Button>
-                  </CardActions>
-                </Card>
+        </SwipeableDrawer>
+        <>
+        {
+          tabParamsCollection.map((tab, id)=>
+            <Fragment key={tab.tabID}>
+              <Box key={tab.tabID+"box"} sx={{backgroundColor:tab.tabID===activeTabID?theme.palette.primary.main:"inherit", color:tab.tabID===activeTabID?"white":theme.palette.primary.main, paddingBottom:"2px", whiteSpace:"nowrap"}}>
+                <Button onClick={()=>setActiveTabID(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
+                  {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
+                </Button>
+                <TabMenu tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
               </Box>
-            </Box>
-            </>
-            }
+              <Divider key={tab.tabID+"-divider"} orientation="vertical" flexItem role="presentation" />
+            </Fragment>
+          )
+        }
           <Box>
-            {activeTabParams?
-            <Box>
-              <Box sx={{paddingLeft:3, display:"flex", alignItems:"center"}}>
-                <Typography  sx={{marginRight:2}}>{activeTabParams.versionAbbrev.split("_").join(" ").toUpperCase()}</Typography>
-                <Divider role="presentation" orientation="vertical" flexItem />
-                <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton size="small"><Add /></IconButton> Ch {activeTabParams.chapter_ID+1} <IconButton size="small"><Remove /></IconButton></Box>
-              </Box>
-              <Tab key={activeTabID} {...activeTabParams} />
-            </Box>
-            :null}
+            <IconButton color="primary" onClick={()=>handleAddTab()}><Add color="primary" /></IconButton>
           </Box>
-          {isCreateNewTab?
-          <CreateTabDialog setTabParams={handleAddTabToDB} open={openTabDialog}></CreateTabDialog>
-          :
-          activeTabParams?
-          <EditTabDialog key={activeTabID} setTabParams={handleEditTab} open={openTabDialog} tabParams={activeTabParams}></EditTabDialog>
-          :
-          null
-          }
+        </>
+      </Box>
+        :
+        <>
+        <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%", height:"100vh"}}>
+          <Box sx={{width:"360px", maxWidth:"90%"}}>
+            <Box sx={{marginBottom:10}}>
+              <Typography variant="h4" textAlign="center" style={{color:theme.palette.primary.main, fontWeight:"bold"}} >Absolute Bible</Typography>
+              <Typography textAlign="center" variant="body2">Multilingual & Multi-version such as:</Typography>
+              <Typography color="secondary.light" textAlign="center" variant="subtitle2">MSG | AMP | NLT ...</Typography>
+            </Box>
+            <Card>
+              <CardMedia component="img" image="bible-study.webp" sx={{height:"150px"}} alt="Read Bible" />
+              <CardContent>
+                <Typography gutterBottom variant="h5">Study</Typography>
+                <Typography variant="body2" >Study to show yourself approve unto GOD ...</Typography>
+              </CardContent>
+              <CardActions>
+                <Button onClick={()=>handleAddTab()} variant="contained">Open Bible</Button>
+                <Button onClick={()=>navigate("/histories")}>App Histories</Button>
+              </CardActions>
+            </Card>
+          </Box>
+        </Box>
+        </>
+        }
+      <Box>
+        {activeTabParams?
+        <Box>
+          <Box sx={{paddingLeft:3, display:"flex", alignItems:"center"}}>
+            <Typography  sx={{marginRight:2}}>{activeTabParams?.versionAbbrev.split("_").join(" ").toUpperCase()}</Typography>
+            <Divider role="presentation" orientation="vertical" flexItem />
+            <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton size="small"><Add /></IconButton> Ch {activeTabParams.chapter_ID+1} <IconButton size="small"><Remove /></IconButton></Box>
+          </Box>
+          <Tab key={activeTabID} {...activeTabParams} />
+        </Box>
+        :null}
+      </Box>
+      {isCreateNewTab?
+        <CreateTabDialog setTabParams={handleAddTabToDB} open={openTabDialog}></CreateTabDialog>
+      :
+        <EditTabDialog key={activeTabID} setTabParams={handleEditTab} open={openTabDialog} tabParams={activeTabParams}></EditTabDialog>
+      }
     </Box>
   )
 }
-const CreateTabDialog:FC<{tabParams?:tabModel, setTabParams:Function, open:boolean}> = ({setTabParams, open})=>{
-
+const CreateTabDialog:FC<{setTabParams:Function, open:boolean}> = ({setTabParams, open})=>{
   const [selectedLanguage, setSelectedLanguage] = useState("English")
   const [selectedVersion, setSelectedVersion] = useState(bibleIndex[0].versions[0])
   const [books, setBooks] = useState<book[]>([])
@@ -312,7 +308,6 @@ const CreateTabDialog:FC<{tabParams?:tabModel, setTabParams:Function, open:boole
   </Dialog>)
 }
 const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}> = ({tabParams, setTabParams, open})=>{
-  console.log(tabParams.tabID)
   const [selectedLanguage, setSelectedLanguage] = useState(tabParams.language)
   const [selectedVersion, setSelectedVersion] = useState(getVersionUsingLanguageAndAbbreviation(selectedLanguage, tabParams.versionAbbrev))
   const [books, setBooks] = useState<book[]>([])
@@ -323,7 +318,7 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
 
   const book = books[book_ID]
   const [openBooksDialog, setOpenBooksDialog] = useState(false)
-  const chapters = book?.chapters
+  const chapters = book?book.chapters:[[]]
 
   const chapterNumber = chapter_ID+1
   const bookName = book?.name
@@ -352,7 +347,6 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
     <DialogContent tabIndex={1} sx={{width:"450px", maxWidth:"84%"}}>
       <Box sx={{paddingTop:2}}>
         <Box>
-          {tabParams?.tabID}
           <Languages collection={bibleIndex} handleSelect={setSelectedLanguage} selected={selectedLanguage} />
         </Box>
         <Box sx={{marginTop:2}}>
@@ -393,7 +387,7 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
     }
     return(
       <>
-        <IconButton key={tabID+"handle"} size="small" color={tabID===activeTabID?"primary":"inherit"} sx={{color:"inherit"}} onClick={(ev)=>{handleOpenTabMenu(ev); handleSetActiveTab(tabID)}}><MoreVert fontSize="small" /></IconButton>
+        <IconButton key={tabID+"handle"} size="small" color={tabID===activeTabID?"primary":"inherit"} sx={{color:"inherit"}} onClick={(ev)=>{handleOpenTabMenu(ev); }}><MoreVert fontSize="small" /></IconButton>
         <Menu key={tabID+"menu"} anchorEl={tabMenuAnchorElement} onClose={()=>setTabMenuAnchorElement(null)} open={openTabMenu}>
           <MenuItem onClick={()=>{handleClickEdit()}}>
             <ListItemIcon><Edit /></ListItemIcon>
