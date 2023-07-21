@@ -1,5 +1,5 @@
 import bibleIndex from "./bible_versions/bible-master/json/index.json"
-import { Chapters, Languages, Tab} from './pages/components'
+import { Chapters, Languages, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
 import { FC, Fragment, useEffect, useState } from 'react'
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, SwipeableDrawer, Typography, createTheme} from '@mui/material'
 import { Add, ArrowDropDown, Delete, Edit, History, HourglassBottomRounded, MenuSharp, MoreVert, Note, Remove, SearchRounded, Settings } from '@mui/icons-material'
@@ -66,27 +66,35 @@ export default function Home() {
   const openedTab = new OpenedTab()
 
   const fetchAndCommitOpenedTabs = (offset?:number, amount?:number)=>{
-    openedTab.fetch(offset, amount).then(result=>setTabParamsCollection(result))
+    openedTab.fetch(offset, amount).then(result=>{
+      // fetchAndCommitBibleFile()
+      const tabsWithBooks = result.map(res=>{return {books:"Di", ...res}})
+      setTabParamsCollection(result)
+      setActiveTabID(result[0]?.tabID)
+    })
   }
+  useEffect(()=>fetchAndCommitOpenedTabs(), [])
   const [tabParamsCollection, setTabParamsCollection] = useState<openedTab[]>([])
   const [isCreateNewTab, setIsCreateNewTab] = useState(true)
   const handleAddTabToDB = (tab:addOpenedTab)=>{
     // Adding new Tab
-    openedTab.add(tab).then(()=>{
-      fetchAndCommitOpenedTabs()
-    })
-    
-    setActiveTabID(tab.tabID)
+    if(tab){
+      openedTab.add(tab).then(()=>{
+        fetchAndCommitOpenedTabs()
+      })
+      setActiveTabID(tab.tabID)
+      setIsCreateNewTab(false)
+    }
     setOpenTabDialog(false)
-    setIsCreateNewTab(false)
   }
   const handleEditTab = (tab:openedTab)=>{
     // Editing Existing Tab
-    openedTab.update(tab).then(()=>{
-      fetchAndCommitOpenedTabs()
-    })
-
-    setActiveTabID(tab.tabID)
+    if(tab){
+      openedTab.update(tab).then(()=>{
+        fetchAndCommitOpenedTabs()
+      })
+      setActiveTabID(tab.tabID)
+    }
     setOpenTabDialog(false)
     setIsCreateNewTab(false)
   }
@@ -100,19 +108,18 @@ export default function Home() {
   const [activeTabID, setActiveTabID] = useState("")
   const [openTabDialog, setOpenTabDialog] = useState(false)
   
-  const [activeTabParams, setActiveTabParams] = useState(tabParamsCollection[0])
-  const activeBookName = activeTabParams?activeTabParams.bookName:null
-  
+  const [activeTabParams, setActiveTabParams] = useState(tabParamsCollection.filter(param=>param.tabID === activeTabID)[0])
   useEffect(()=>{
     setActiveTabParams(tabParamsCollection.filter(param=>param.tabID === activeTabID)[0])
-  }, [activeTabID, tabParamsCollection])
+  },[tabParamsCollection, activeTabID])
+  const activeBookName = activeTabParams?activeTabParams.bookName:null
 
   const handleClickEditTab = ()=>{
     setOpenTabDialog(true)
   }
 
   const handleSetActiveTab = (tabID:string)=>{
-    // setActiveTabID(tabID)
+    setActiveTabID(tabID)
   }
 
   const handleAddTab = ()=>{
@@ -169,11 +176,11 @@ export default function Home() {
             </SwipeableDrawer>
             <>
             {
-              tabParamsCollection.map(tab=>
+              tabParamsCollection.map((tab, id)=>
                 <Fragment key={tab.tabID}>
                   <Box key={tab.tabID+"box"} sx={{backgroundColor:tab.tabID===activeTabID?theme.palette.primary.main:"inherit", color:tab.tabID===activeTabID?"white":theme.palette.primary.main, paddingBottom:"2px", whiteSpace:"nowrap"}}>
                     <Button onClick={()=>setActiveTabID(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
-                      {tab.bookName} {tab.bibleAddress.chapter_ID+1} ({getVersionShortName(tab.version.abbreviation)})
+                      {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
                     </Button>
                     <TabMenu tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
                   </Box>
@@ -203,7 +210,7 @@ export default function Home() {
                   </CardContent>
                   <CardActions>
                     <Button onClick={()=>handleAddTab()} variant="contained">Open Bible</Button>
-                    <Button>Create Study Plan</Button>
+                    <Button onClick={()=>navigate("/histories")}>App Histories</Button>
                   </CardActions>
                 </Card>
               </Box>
@@ -214,18 +221,21 @@ export default function Home() {
             {activeTabParams?
             <Box>
               <Box sx={{paddingLeft:3, display:"flex", alignItems:"center"}}>
-                <Typography  sx={{marginRight:2}}>{activeTabParams.version.name.split("_").join(" ").toUpperCase()}</Typography>
+                <Typography  sx={{marginRight:2}}>{activeTabParams.versionAbbrev.split("_").join(" ").toUpperCase()}</Typography>
                 <Divider role="presentation" orientation="vertical" flexItem />
-                <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton size="small"><Add /></IconButton> Ch {activeTabParams.bibleAddress.chapter_ID+1} <IconButton size="small"><Remove /></IconButton></Box>
+                <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton size="small"><Add /></IconButton> Ch {activeTabParams.chapter_ID+1} <IconButton size="small"><Remove /></IconButton></Box>
               </Box>
-              <Tab tabID={activeTabParams.tabID} version={activeTabParams.version} language={activeTabParams.language} bibleAddress={activeTabParams.bibleAddress} />
+              <Tab key={activeTabID} {...activeTabParams} />
             </Box>
             :null}
           </Box>
           {isCreateNewTab?
           <CreateTabDialog setTabParams={handleAddTabToDB} open={openTabDialog}></CreateTabDialog>
           :
+          activeTabParams?
           <EditTabDialog key={activeTabID} setTabParams={handleEditTab} open={openTabDialog} tabParams={activeTabParams}></EditTabDialog>
+          :
+          null
           }
     </Box>
   )
@@ -265,7 +275,7 @@ const CreateTabDialog:FC<{tabParams?:tabModel, setTabParams:Function, open:boole
   }, [book, chapter_ID])
   // Fetch Books (Bible) of the selected version and assign to state
   
-  const selectedBibleParams:tabParamsProp = {tabID:generateRandomKey(), books:books, version:selectedVersion, language:selectedLanguage, languageVersions:languageVersions, bibleAddress:{book_ID:book_ID, chapter_ID:chapter_ID}}
+  const selectedBibleParams:addOpenedTab = {tabID:generateRandomKey(), bookName:bookName, versionAbbrev:selectedVersion.abbreviation, language:selectedLanguage, book_ID:book_ID, chapter_ID:chapter_ID}
   
   return(<Dialog open={open}>
     <DialogTitle>Open {selectedLanguage} Bible | {bookName} {chapterNumber} {selectedVersion.abbreviation.split("_")[selectedVersion.abbreviation.split("_").length - 1].toUpperCase()}</DialogTitle>
@@ -295,33 +305,34 @@ const CreateTabDialog:FC<{tabParams?:tabModel, setTabParams:Function, open:boole
     </DialogContent>
     <DialogActions>
       <Button variant="outlined" onClick={()=>setTabParams()}>Close</Button>
-      <Button color="primary" variant="contained" onClick={()=>setTabParams(selectedBibleParams)}>Done</Button>
+      <Button color="primary" variant="contained" onClick={()=>{
+        setTabParams(selectedBibleParams)
+        }}>Done</Button>
     </DialogActions>
   </Dialog>)
 }
 const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}> = ({tabParams, setTabParams, open})=>{
-
+  console.log(tabParams.tabID)
   const [selectedLanguage, setSelectedLanguage] = useState(tabParams.language)
-  const [selectedVersion, setSelectedVersion] = useState(tabParams.version)
+  const [selectedVersion, setSelectedVersion] = useState(getVersionUsingLanguageAndAbbreviation(selectedLanguage, tabParams.versionAbbrev))
   const [books, setBooks] = useState<book[]>([])
   // Book here refers to the name of any book of the bible such as Genesis, Exodus, ... Revelation
-  const [book_ID, setBook_ID] = useState(tabParams.bibleAddress.book_ID)
+  const [book_ID, setBook_ID] = useState(tabParams.book_ID)
   const languageVersions = bibleIndex.filter((obj)=>obj.language === selectedLanguage)[0].versions
-  const [chapter_ID, setChapter_ID] = useState(tabParams.bibleAddress.chapter_ID)
+  const [chapter_ID, setChapter_ID] = useState(tabParams.chapter_ID)
 
   const book = books[book_ID]
   const [openBooksDialog, setOpenBooksDialog] = useState(false)
-  const chapters = book?book.chapters:[[]]
-  const verses = chapters?chapters[chapter_ID]:null 
+  const chapters = book?.chapters
 
-  const chapterNumber = chapter_ID>=0?chapter_ID+1:null
-  const bookName = book?book.name:""
+  const chapterNumber = chapter_ID+1
+  const bookName = book?.name
   
-  useEffect(()=>{
-    if(languageVersions?.length){
-      setSelectedVersion(languageVersions[0])
-    }
-  }, [languageVersions])
+  // useEffect(()=>{
+  //   if(languageVersions?.length){
+  //     setSelectedVersion(languageVersions[0])
+  //   }
+  // }, [languageVersions])
 
   useEffect(()=>{
     fetchAndCommitBibleFile(selectedVersion, setBooks)
@@ -334,10 +345,10 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
   }, [book, chapter_ID])
   // Fetch Books (Bible) of the selected version and assign to state
   
-  const selectedBibleParams:tabParamsProp = {tabID:tabParams.tabID, books:books, version:selectedVersion, language:selectedLanguage, languageVersions:languageVersions, bibleAddress:{book_ID:book_ID, chapter_ID:chapter_ID}}
+  const selectedBibleParams:tabModel = {id:tabParams.id, tabID:tabParams.tabID, versionAbbrev:selectedVersion.abbreviation, language:selectedLanguage, book_ID:book_ID, chapter_ID:chapter_ID}
   
   return(<Dialog key={tabParams?.tabID} open={open}>
-    <DialogTitle>Open {selectedLanguage} Bible | {bookName} {chapterNumber} {selectedVersion.abbreviation.split("_")[selectedVersion.abbreviation.split("_").length - 1].toUpperCase()}</DialogTitle>
+    <DialogTitle>Open {selectedLanguage} Bible | {bookName} {chapterNumber} {selectedVersion.name.split("_")[selectedVersion.name.split("_").length - 1].toUpperCase()}</DialogTitle>
     <DialogContent tabIndex={1} sx={{width:"450px", maxWidth:"84%"}}>
       <Box sx={{paddingTop:2}}>
         <Box>
@@ -375,11 +386,16 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
     const handleOpenTabMenu = (ev:React.MouseEvent<HTMLButtonElement>)=>{
       setTabMenuAnchorElement(ev.currentTarget)
     }
+    const handleClickEdit = ()=>{
+      handleSetActiveTab(tabID)
+      handleClickEditTab(tabID)
+      setTabMenuAnchorElement(null)
+    }
     return(
       <>
         <IconButton key={tabID+"handle"} size="small" color={tabID===activeTabID?"primary":"inherit"} sx={{color:"inherit"}} onClick={(ev)=>{handleOpenTabMenu(ev); handleSetActiveTab(tabID)}}><MoreVert fontSize="small" /></IconButton>
         <Menu key={tabID+"menu"} anchorEl={tabMenuAnchorElement} onClose={()=>setTabMenuAnchorElement(null)} open={openTabMenu}>
-          <MenuItem onClick={()=>{handleClickEditTab(tabID)}}>
+          <MenuItem onClick={()=>{handleClickEdit()}}>
             <ListItemIcon><Edit /></ListItemIcon>
             <ListItemText sx={{paddingRight:20}}>Edit tab</ListItemText>
           </MenuItem>

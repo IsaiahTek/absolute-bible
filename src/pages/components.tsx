@@ -184,125 +184,128 @@ export const MultiVersionVerseGroup:FC<{selectedVersion:version, verseAddress:ve
         </>
     )
 }
-export const Tab:FC<tab> = ({tabID, bibleAddress, language, version, bookName})=>{
-
-    const {book_ID, chapter_ID} = bibleAddress
-    const chapterNumber = chapter_ID + 1
-    const [books, setBooks] = useState<book[]>([])
-    const book = books[book_ID]
-    const chapters = book.chapters
-    const verses = chapters[chapter_ID]
-    
-    // Verse ID for MultiVerse View
-    const [verse_ID, setVerse_ID] = useState(-1)
-    
-    const [referenceVerse, setReferenceVerse] = useState<string[]>([])
-    
-    const referencesForVerse = ()=>{
-      let refAddr = [...referenceVerse]
-      refAddr[0] = refAddr[0].toUpperCase().includes("JUDG")?"JDG":refAddr[0]
-      refAddr[0] = refAddr[0].toUpperCase().includes("JUDE")?"JDE":refAddr[0]
-      refAddr[0] = refAddr[0].toUpperCase().includes("PHI")?"PHP":refAddr[0]
-      refAddr[0] = refAddr[0].toUpperCase().includes("SONG")?"SOS":refAddr[0]
-      refAddr[0] = refAddr[0].replaceAll(" ", "").substring(0,3).toUpperCase()
-      
-      return referencesCollection.find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
-    }
+export const Tab:FC<tab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName})=>{
+  const [books, setBooks] = useState<book[]>([])
+  // useEffect(()=>fetchAndCommitBibleFile(getVersionUsingLanguageAndAbbreviation(language, versionAbbrev), setBooks), [tabID])
+  const chapterNumber = chapter_ID + 1
+  const book = books[book_ID]
+  const chapters = book?.chapters
+  const verses = chapters?chapters[chapter_ID]:[[]]
+  // Verse ID for MultiVerse View
+  const [verse_ID, setVerse_ID] = useState(-1)
   
-    const getVerseFromRef = (verseRef:string[])=>{
-      let bookNames = formatedBookNames(books)
-      let bookId = bookNames.indexOf(verseRef[0])
-      if(bookId === -1) return null
-      return books[bookId].chapters[Number(verseRef[1])-1][Number(verseRef[2])-1]
-    }
+  const [referenceVerse, setReferenceVerse] = useState<string[]>([])
+  
+  const referencesForVerse = ()=>{
+    let refAddr = [...referenceVerse]
+    refAddr[0] = refAddr[0].toUpperCase().includes("JUDG")?"JDG":refAddr[0]
+    refAddr[0] = refAddr[0].toUpperCase().includes("JUDE")?"JDE":refAddr[0]
+    refAddr[0] = refAddr[0].toUpperCase().includes("PHI")?"PHP":refAddr[0]
+    refAddr[0] = refAddr[0].toUpperCase().includes("SONG")?"SOS":refAddr[0]
+    refAddr[0] = refAddr[0].replaceAll(" ", "").substring(0,3).toUpperCase()
+    
+    return referencesCollection.find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
+  }
 
-    const [hoveredVerse, setHoveredVerse] = useState(-1)
-    const handleMouseEnterVerse = (verse_ID:number)=>{
-      setHoveredVerse(verse_ID)
-    }
+  const getVerseFromRef = (verseRef:string[])=>{
+    let bookNames = formatedBookNames(books)
+    let bookId = bookNames.indexOf(verseRef[0])
+    if(bookId === -1) return null
+    return books[bookId].chapters[Number(verseRef[1])-1][Number(verseRef[2])-1]
+  }
 
-    const handleMouseLeaveVerse = ()=>{
-      setHoveredVerse(-1)
-    }
-    return (
-        <Box>
-          <Grid container>
-            <Grid sm={12} sx={{alignContent:"flex-start"}}>
-              
-              {(chapters) ?
-              <>
-                <Box sx={{position:"relative", zIndex:0, marginTop:1}}>
-                  {verses?<Grid container marginRight={2} marginLeft={2}>
-                    <Grid md={6.7}>
-                      <Box>
-                        <Card variant='outlined' sx={{maxHeight:"85vh", width:"100%", overflowY:"auto"}}>
-                          {verses.map((verse, id)=>
-                          <Box sx={{padding:2, backgroundColor:hoveredVerse===id?"#ebf8d8":verse_ID === id?"primary.light":"inherit"}} key={id} onMouseEnter={()=>handleMouseEnterVerse(id)} onMouseLeave={()=>handleMouseLeaveVerse()} onClick={()=>setVerse_ID(id)} >
-                            <Typography sx={{textAlign:"justify", fontSize:18}} variant='body1'>
-                              <span style={{display:"inline-flex", fontSize:15, color:"gray", marginRight:"10px"}}>{id+1}</span>
-                              {verse}
-                            </Typography>
-                            <Box>
-                              <Box sx={{textAlign:"center"}}>
-                                {referenceVerse[2] ===(id+1).toString() && referenceVerse[1]===(chapter_ID+1).toString() && referenceVerse[0] === book.name
-                                ?
-                                <Button size='small' onClick={()=>{setReferenceVerse([])}} color="secondary">
-                                  <Box sx={{display:"flex", alignItems:"center"}}>
-                                    <VisibilityOff />
-                                    <Box sx={{marginTop:.8}}>
-                                      Hide References
-                                    </Box>
-                                  </Box>
-                                </Button>
-                                :
-                                <Button size='small' color="primary" onClick={()=>{setReferenceVerse([book.name, (chapter_ID+1).toString(), (id+1).toString()])}}>
-                                  <Box sx={{display:"flex", alignItems:"center"}}>
-                                    <Visibility />
-                                    <Box sx={{marginLeft:.8}}>
-                                      See References
-                                    </Box>
-                                  </Box>
-                                </Button>
-                                }
-                              </Box>
+  const [hoveredVerse, setHoveredVerse] = useState(-1)
+  const handleMouseEnterVerse = (verse_ID:number)=>{
+    setHoveredVerse(verse_ID)
+  }
+
+  const handleMouseLeaveVerse = ()=>{
+    setHoveredVerse(-1)
+  }
+  return (
+      <Box>
+        <Grid container>
+          <Grid sm={12} sx={{alignContent:"flex-start"}}>
+            
+            {(chapters) ?
+            <>
+              <Box sx={{position:"relative", zIndex:0, marginTop:1}}>
+                {verses?<Grid container marginRight={2} marginLeft={2}>
+                  <Grid md={6.7}>
+                    <Box>
+                      <Card variant='outlined' sx={{maxHeight:"85vh", width:"100%", overflowY:"auto"}}>
+                        {verses.map((verse, id)=>
+                        <Box sx={{padding:2, backgroundColor:hoveredVerse===id?"#ebf8d8":verse_ID === id?"primary.light":"inherit"}} key={id} onMouseEnter={()=>handleMouseEnterVerse(id)} onMouseLeave={()=>handleMouseLeaveVerse()} onClick={()=>setVerse_ID(id)} >
+                          <Typography sx={{textAlign:"justify", fontSize:18}} variant='body1'>
+                            <span style={{display:"inline-flex", fontSize:15, color:"gray", marginRight:"10px"}}>{id+1}</span>
+                            {verse}
+                          </Typography>
+                          <Box>
+                            <Box sx={{textAlign:"center"}}>
                               {referenceVerse[2] ===(id+1).toString() && referenceVerse[1]===(chapter_ID+1).toString() && referenceVerse[0] === book.name
                               ?
-                              referencesForVerse()?.map((ref: any[],id: React.Key | null | undefined)=>
-                              <Box display="inline-flex" key={id}>
-                                <HtmlTooltip arrow sx={{fontSize:"35px"}} placement='bottom'
-                                  title={<Card sx={{padding:2}}><Typography>{getVerseFromRef([...ref])}</Typography></Card>}>
-                                    <Button size='small' sx={{paddingTop:.6}} variant='text'>{ref.join(" ")}</Button>
-                                </HtmlTooltip>
-                              </Box>)
+                              <Button size='small' onClick={()=>{setReferenceVerse([])}} color="secondary">
+                                <Box sx={{display:"flex", alignItems:"center"}}>
+                                  <VisibilityOff />
+                                  <Box sx={{marginTop:.8}}>
+                                    Hide References
+                                  </Box>
+                                </Box>
+                              </Button>
                               :
-                              null
+                              <Button size='small' color="primary" onClick={()=>{setReferenceVerse([book.name, (chapter_ID+1).toString(), (id+1).toString()])}}>
+                                <Box sx={{display:"flex", alignItems:"center"}}>
+                                  <Visibility />
+                                  <Box sx={{marginLeft:.8}}>
+                                    See References
+                                  </Box>
+                                </Box>
+                              </Button>
                               }
                             </Box>
+                            {referenceVerse[2] ===(id+1).toString() && referenceVerse[1]===(chapter_ID+1).toString() && referenceVerse[0] === book.name
+                            ?
+                            referencesForVerse()?.map((ref: any[],id: React.Key | null | undefined)=>
+                            <Box display="inline-flex" key={id}>
+                              <HtmlTooltip arrow sx={{fontSize:"35px"}} placement='bottom'
+                                title={<Card sx={{padding:2}}><Typography>{getVerseFromRef([...ref])}</Typography></Card>}>
+                                  <Button size='small' sx={{paddingTop:.6}} variant='text'>{ref.join(" ")}</Button>
+                              </HtmlTooltip>
+                            </Box>)
+                            :
+                            null
+                            }
                           </Box>
-                          )}
-                        </Card>
-                      </Box>
-                    </Grid>
-                    <Grid xs={12} md={5} mdOffset={.3}>
-                      <Box sx={{width:"100%"}}>
-                        <MultiVersionVerseGroup selectedVersion={version} verseAddress={{book_ID:book_ID, chapter_ID:chapter_ID, verse_ID:verse_ID}} />
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  :
-                    <Box sx={{display:"flex", height:"75vh", width:"100%", justifyContent:"center", alignItems:"center"}}>
-                      <Typography variant='h4' color="gray">Select a chapter</Typography>
+                        </Box>
+                        )}
+                      </Card>
                     </Box>
-                  }
-                </Box>
-              </>
+                  </Grid>
+                  <Grid xs={12} md={5} mdOffset={.3}>
+                    <Box sx={{width:"100%"}}>
+                      <MultiVersionVerseGroup selectedVersion={getVersionUsingLanguageAndAbbreviation(language, versionAbbrev)} verseAddress={{book_ID:book_ID, chapter_ID:chapter_ID, verse_ID:verse_ID}} />
+                    </Box>
+                  </Grid>
+                </Grid>
                 :
-              <Box sx={{display:"flex", height:"85vh", justifyContent:"center", alignItems:"center"}}>
-                <Typography variant='h4' color="gray">Select a book first</Typography>
+                  <Box sx={{display:"flex", height:"75vh", width:"100%", justifyContent:"center", alignItems:"center"}}>
+                    <Typography variant='h4' color="gray">Select a chapter</Typography>
+                  </Box>
+                }
               </Box>
-              }
-            </Grid>
+            </>
+              :
+            <Box sx={{display:"flex", height:"85vh", justifyContent:"center", alignItems:"center"}}>
+              <Typography variant='h4' color="gray">Select a book first</Typography>
+            </Box>
+            }
           </Grid>
-        </Box>
-    )
-  }
+        </Grid>
+      </Box>
+  )
+}
+export const getVersionUsingLanguageAndAbbreviation = (language:string, abbrev:string):version=>{
+  const versions = bibleIndex.find(a=>a.language===language)?.versions
+  const version = versions?.find(v=>v.abbreviation===abbrev)
+  return version?version:{name:"", abbreviation:""}
+}

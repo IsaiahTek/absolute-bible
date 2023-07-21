@@ -24,7 +24,8 @@ export class TabHistory extends BaseModel{
 export const HistoriesPage = ()=>{
     useEffect(()=>{
         const historyObj = new TabHistory()
-        historyObj.fetch().then(v=>console.log(v))
+        const openedTab = new OpenedTab()
+        openedTab.fetch().then(v=>console.log(v))
     }, [])
     return(
         <Box>
@@ -37,15 +38,22 @@ export class OpenedTab extends BaseModel{
     constructor(){
         super();
         this.table = "opened_tabs";
-        this.createTable(["id INTEGER PRIMARY KEY", "tab TEXT UNIQUE"])
+        
+        // this.dropTable()
+        this.createTable(["id INTEGER PRIMARY KEY", "tabID TEXT UNIQUE", "bookName TEXT", "language TEXT", "versionAbbrev TEXT", "book_ID INTEGER", "chapter_ID INTEGER", "verse_ID INTEGER"])
     }
     public fetch = async(offset=0, amount=30)=>{
         return await (await this.databaseObject).select<openedTab[]>(`SELECT * FROM ${this.table} LIMIT ${offset}, ${amount}`)
     }
     public add = async(tab:tab)=>{
-        return await (await this.databaseObject).execute(`INSERT INTO ${this.table} (tab) VALUES('${JSON.stringify(tab)}')`)
+        return await (await this.databaseObject).execute(`INSERT INTO ${this.table} (tabID, bookName, language, versionAbbrev, book_ID, chapter_ID, verse_ID) VALUES("${tab.tabID}", "${tab.bookName}", "${tab.language}", "${tab.versionAbbrev}", ${tab.book_ID}, ${tab.chapter_ID}, ${tab.verse_ID?tab.verse_ID:-1})`)
     }
-    public update = async(model: openedTab) => {
-        return await (await this.databaseObject).execute(`UPDATE ${this.table} SET(tab) VALUES('${JSON.stringify(model.tab)}') WHERE id = ${model.id}`)
+    public update = async(tab: openedTab) => {
+        return await (await this.databaseObject).execute(`
+            UPDATE ${this.table}
+            SET(tabID, bookName, language, versionAbbrev, book_ID, chapter_ID, verse_ID)
+            VALUES("${tab.tabID}", "${tab.bookName}", "${tab.language}", "${tab.versionAbbrev}", ${tab.book_ID}, ${tab.chapter_ID}, ${tab.verse_ID})
+            WHERE id = ${tab.id}
+        `)
     }
 }

@@ -54,14 +54,12 @@ type adapterVersions = {abbreviation:"asv"|"bible_esv"|"yoruba-bible"|"kjv", nam
 type verseAddress = {book_ID:number, chapter_ID:number, verse_ID:number}
 type tab = {
     tabID: string;
-    bibleAddress: {
-        book_ID: number;
-        chapter_ID: number;
-        verse_ID?: number | undefined;
-    };
+    book_ID: number;
+    chapter_ID: number;
+    verse_ID?: number;
     bookName?:string,
     language: string;
-    version: version;
+    versionAbbrev: string;
 }
 type addTabHistory = {tab:tab, date:string}
 interface tabHistory extends addTabHistory { id:number }
@@ -70,5 +68,7 @@ type addSearchHistory = {searchPhrase:string, language:language, version:version
 interface searchHistory extends addSearchHistory {id:number}
 type searchHistoryCollection = searchHistory[]
 type addOpenedTab = tab
-interface tabModel extends addOpenedTab{ id:number }
+interface tabModel extends addOpenedTab{
+    id:number 
+}
 type openedTab = tabModel
