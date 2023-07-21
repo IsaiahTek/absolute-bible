@@ -184,9 +184,9 @@ export const MultiVersionVerseGroup:FC<{selectedVersion:version, verseAddress:ve
         </>
     )
 }
-export const Tab:FC<tab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName})=>{
-  const [books, setBooks] = useState<book[]>([])
-  useEffect(()=>fetchAndCommitBibleFile(getVersionUsingLanguageAndAbbreviation(language, versionAbbrev), setBooks), [tabID])
+export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName, books})=>{
+  // const [books, setBooks] = useState<book[]>([])
+  // useEffect(()=>fetchAndCommitBibleFile(getVersionUsingLanguageAndAbbreviation(language, versionAbbrev), setBooks), [tabID])
   const chapterNumber = chapter_ID + 1
   const book = books[book_ID]
   const chapters = book?.chapters

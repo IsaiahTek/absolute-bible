@@ -5,23 +5,16 @@ import NG_YORUBA from "./bible-version-adapters/YORUBA_TO_APP_STANDARD"
 
 export const adapters:{[x:string]:any} = {"asv":EN_ASV, "bible_esv":EN_ESV, "yoruba-bible":NG_YORUBA, "bible_amp":BibleJSON_FROM_XML, "Bible_English_GNB":BibleJSON_FROM_XML, "Bible_English_MSG":BibleJSON_FROM_XML}
 
+export const fetchBible = async(selectedVersion:version):Promise<book[]>=>{
+  let usesAdapter = adapters[selectedVersion.abbreviation]
+  let isXmlBible = usesAdapter && adapters[selectedVersion.abbreviation] === BibleJSON_FROM_XML
+  let baseUrl = (usesAdapter)?"./bible_versions/":"./bible_versions/bible-master/json/"
+  let z = await fetch(`${baseUrl+selectedVersion.abbreviation}${isXmlBible?".xml":".json"}`).then((response)=>{
+    return isXmlBible?response.text():response.json()
+  })
+  return usesAdapter?adapters[selectedVersion.abbreviation](z):z
+}
+
 export const fetchAndCommitBibleFile = (selectedVersion:version, setBooks:Function)=>{
-  
-  if(selectedVersion){
-    let usesAdapter = adapters[selectedVersion.abbreviation]
-    let isXmlBible = usesAdapter && adapters[selectedVersion.abbreviation] === BibleJSON_FROM_XML
-    let baseUrl = (usesAdapter)?"./bible_versions/":"./bible_versions/bible-master/json/"
-    fetch(`${baseUrl+selectedVersion.abbreviation}${isXmlBible?".xml":".json"}`).then((response)=>{
-      return isXmlBible?response.text():response.json()
-    }).then((data)=>{
-      if(usesAdapter){
-        let bible = adapters[selectedVersion.abbreviation](data)
-        setBooks(bible)
-      }else{
-        setBooks(data)
-      }
-    }).then(()=>{
-        // this.setState({hasLoadedBible : true})
-    })
-  }
+  fetchBible(selectedVersion).then(r=>setBooks(r))
 }

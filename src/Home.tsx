@@ -11,7 +11,7 @@ import { getAnalytics, logEvent } from "firebase/analytics";
 import { InstallPWA, LogInstallationSuccessEvent } from './pages/InstallApp'
 import React from 'react'
 import { generateRandomKey } from "./string_helper"
-import { fetchAndCommitBibleFile } from "./adapters"
+import { fetchAndCommitBibleFile, fetchBible } from "./adapters"
 import { useNavigate } from "react-router-dom"
 import { OpenedTab } from "./pages/TabHistory"
 // TODO: Add SDKs for Firebase products that you want to use
@@ -65,16 +65,22 @@ export default function Home() {
   
   const openedTab = new OpenedTab()
 
+  // This is done once (At each launch or refresh of this window)
   const fetchAndCommitOpenedTabs = (offset?:number, amount?:number)=>{
-    openedTab.fetch(offset, amount).then(result=>{
+    openedTab.fetch(offset, amount).then(async(result)=>{
       // fetchAndCommitBibleFile()
-      const tabsWithBooks = result.map(res=>{return {books:"Di", ...res}})
-      setTabParamsCollection(result)
+      let computedTabsWithBooks = []
+      for(let i = 0; i < result.length; i++){
+        let res = result[i]
+        let books = fetchBible(getVersionUsingLanguageAndAbbreviation(res.language, res.versionAbbrev)).then(r=>r)
+        computedTabsWithBooks.push({books:(await books), ...res})
+      }
+      setTabParamsCollection(computedTabsWithBooks)
       setActiveTabID(result[0]?.tabID)
     })
   }
   useEffect(()=>fetchAndCommitOpenedTabs(), [])
-  const [tabParamsCollection, setTabParamsCollection] = useState<openedTab[]>([])
+  const [tabParamsCollection, setTabParamsCollection] = useState<resolvedOpenedTab[]>([])
   const [isCreateNewTab, setIsCreateNewTab] = useState(true)
   const handleAddTabToDB = (tab:addOpenedTab)=>{
     // Adding new Tab

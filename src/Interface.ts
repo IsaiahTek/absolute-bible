@@ -72,3 +72,5 @@ interface tabModel extends addOpenedTab{
     id:number 
 }
 type openedTab = tabModel
+interface computedOpenedTab extends openedTab{books:Promise<book[]>}
+interface resolvedOpenedTab extends openedTab{books:book[]}
