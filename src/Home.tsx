@@ -76,7 +76,7 @@ export default function Home() {
         computedTabsWithBooks.push({books:(await books), ...res})
       }
       setTabParamsCollection(computedTabsWithBooks)
-      setActiveTabID(activeTabID?activeTabID:result[0].tabID)
+      handleSetActiveTab(localStorage.getItem("activeTabID")?String(localStorage.getItem("activeTabID")):result[0].tabID)
     })
   }
   useEffect(()=>fetchAndCommitOpenedTabs(), [])
@@ -88,7 +88,7 @@ export default function Home() {
       openedTab.add(tab).then(()=>{
         fetchAndCommitOpenedTabs()
       })
-      setActiveTabID(tab.tabID)
+      handleSetActiveTab(tab.tabID)
       setIsCreateNewTab(false)
     }
     setOpenTabDialog(false)
@@ -107,7 +107,7 @@ export default function Home() {
     openedTab.delete(tab_id)
     setTabParamsCollection(tabParamsCollection.filter(tab=>tab.tabID !== tabID))
     if(activeTabID === tabID && tabParamsCollection.length){
-      setActiveTabID(tabParamsCollection[0].tabID)
+      handleSetActiveTab(tabParamsCollection[0].tabID)
     }
   }
   const [activeTabID, setActiveTabID] = useState("")
@@ -126,6 +126,7 @@ export default function Home() {
 
   const handleSetActiveTab = (tabID:string)=>{
     setActiveTabID(tabID)
+    localStorage.setItem("activeTabID", tabID)
   }
 
   const handleAddTab = ()=>{
@@ -197,7 +198,7 @@ export default function Home() {
           tabParamsCollection.map((tab, id)=>
             <Fragment key={tab.tabID}>
               <Box key={tab.tabID+"box"} sx={{backgroundColor:tab.tabID===activeTabID?theme.palette.primary.main:"inherit", color:tab.tabID===activeTabID?"white":theme.palette.primary.main, paddingBottom:"2px", whiteSpace:"nowrap"}}>
-                <Button onClick={()=>setActiveTabID(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
+                <Button onClick={()=>handleSetActiveTab(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
                   {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
                 </Button>
                 <TabMenu tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
