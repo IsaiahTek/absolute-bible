@@ -30,8 +30,7 @@
     "tauri": "tauri",
     "tauri-build": "tauri build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "deploy": "npm run build && firebase deploy"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
