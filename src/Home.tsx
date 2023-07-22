@@ -76,7 +76,7 @@ export default function Home() {
         computedTabsWithBooks.push({books:(await books), ...res})
       }
       setTabParamsCollection(computedTabsWithBooks)
-      setActiveTabID(result[0]?.tabID)
+      setActiveTabID(activeTabID?activeTabID:result[0].tabID)
     })
   }
   useEffect(()=>fetchAndCommitOpenedTabs(), [])
@@ -131,6 +131,18 @@ export default function Home() {
   const handleAddTab = ()=>{
     setIsCreateNewTab(true)
     setOpenTabDialog(true)
+  }
+
+  const handleIncrementChapter = ()=>{
+    if(activeTabParams.chapter_ID < activeTabParams.books[activeTabParams.book_ID].chapters.length - 1){
+      handleEditTab({...activeTabParams, chapter_ID:activeTabParams.chapter_ID+1})
+    }
+  }
+
+  const handleDecrementChapter = ()=>{
+    if(activeTabParams.chapter_ID > 0){
+      handleEditTab({...activeTabParams, chapter_ID:activeTabParams.chapter_ID - 1})
+    }
   }
 
   const [openMainMenu, setOpenMainMenu] = useState(false)
@@ -229,7 +241,7 @@ export default function Home() {
           <Box sx={{paddingLeft:3, display:"flex", alignItems:"center"}}>
             <Typography  sx={{marginRight:2}}>{activeTabParams?.versionAbbrev.split("_").join(" ").toUpperCase()}</Typography>
             <Divider role="presentation" orientation="vertical" flexItem />
-            <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton size="small"><Add /></IconButton> Ch {activeTabParams.chapter_ID+1} <IconButton size="small"><Remove /></IconButton></Box>
+            <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton onClick={()=>handleDecrementChapter()} size="small"><Remove /></IconButton> Ch {activeTabParams.chapter_ID+1} <IconButton onClick={()=>handleIncrementChapter()} size="small"><Add /></IconButton></Box>
           </Box>
           <Tab key={activeTabID} {...activeTabParams} />
         </Box>
@@ -346,7 +358,7 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
   }, [book, chapter_ID])
   // Fetch Books (Bible) of the selected version and assign to state
   
-  const selectedBibleParams:tabModel = {id:tabParams.id, tabID:tabParams.tabID, versionAbbrev:selectedVersion.abbreviation, language:selectedLanguage, book_ID:book_ID, chapter_ID:chapter_ID}
+  const selectedBibleParams:tabModel = {id:tabParams.id, tabID:tabParams.tabID, versionAbbrev:selectedVersion.abbreviation, language:selectedLanguage, book_ID:book_ID, chapter_ID:chapter_ID, bookName:bookName}
   
   return(<Dialog key={tabParams?.tabID} open={open}>
     <DialogTitle>Open {selectedLanguage} Bible | {bookName} {chapterNumber} {selectedVersion.name.split("_")[selectedVersion.name.split("_").length - 1].toUpperCase()}</DialogTitle>

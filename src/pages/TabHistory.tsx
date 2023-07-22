@@ -51,9 +51,7 @@ export class OpenedTab extends BaseModel{
     public update = async(tab: openedTab) => {
         return await (await this.databaseObject).execute(`
             UPDATE ${this.table}
-            SET(tabID, bookName, language, versionAbbrev, book_ID, chapter_ID, verse_ID)
-            VALUES("${tab.tabID}", "${tab.bookName}", "${tab.language}", "${tab.versionAbbrev}", ${tab.book_ID}, ${tab.chapter_ID}, ${tab.verse_ID})
-            WHERE id = ${tab.id}
+            SET bookName = "${tab.bookName}", language = "${tab.language}", versionAbbrev = "${tab.versionAbbrev}", book_ID = ${tab.book_ID}, chapter_ID = ${tab.chapter_ID}, verse_ID = ${tab.verse_ID?tab.verse_ID:-1} WHERE id = ${tab.id}
         `)
     }
 }
