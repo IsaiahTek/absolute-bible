@@ -74,3 +74,5 @@ interface tabModel extends addOpenedTab{
 type openedTab = tabModel
 interface computedOpenedTab extends openedTab{books:Promise<book[]>}
 interface resolvedOpenedTab extends openedTab{books:book[]}
+type searchResult = {address:{bookName:string, chapter_ID:number, verse_ID:number}, text:string, rank:number}
+type searchPayload = {bible:book[], version?:version}

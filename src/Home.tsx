@@ -1,8 +1,8 @@
 import bibleIndex from "./bible_versions/bible-master/json/index.json"
-import { Chapters, Languages, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
+import { AppMenu, Chapters, Languages, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
 import { FC, Fragment, useEffect, useState } from 'react'
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, SwipeableDrawer, Typography, createTheme} from '@mui/material'
-import { Add, ArrowDropDown, Delete, Edit, History, HourglassBottomRounded, MenuSharp, MoreVert, Note, Remove, SearchRounded, Settings } from '@mui/icons-material'
+import { Add, ArrowDropDown, Close, Delete, Edit, History, HourglassBottomRounded, MenuSharp, MoreVert, Note, Remove, SearchRounded, Settings } from '@mui/icons-material'
 
 
 // Import the functions you need from the SDKs you need
@@ -146,8 +146,6 @@ export default function Home() {
     }
   }
 
-  const [openMainMenu, setOpenMainMenu] = useState(false)
-
   const getVersionShortName = (name:string)=> name.split("_")[name.split("_").length - 1].toUpperCase()
   const navigate = useNavigate()
   return (
@@ -155,44 +153,7 @@ export default function Home() {
     {
       tabParamsCollection.length?
       <Box role="presentation" sx={{display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto"}}>
-        <IconButton id="main_menu" color="primary" sx={{marginRight:2}} onClick={()=>setOpenMainMenu(true)}><MenuSharp /></IconButton>
-        <SwipeableDrawer anchor="left" open={openMainMenu} onOpen={()=>setOpenMainMenu(true)} onClose={()=>setOpenMainMenu(false)}>
-          <Box sx={{height:"100vh", width:250}}>
-            <List onClick={()=>setOpenMainMenu(false)} onKeyDown={()=>setOpenMainMenu(false)}>
-              <ListItem disablePadding>
-                <ListItemButton onClick={()=>navigate("/histories")}>
-                  <ListItemIcon><History /></ListItemIcon>
-                  <ListItemText>Histories</ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon><Note /></ListItemIcon>
-                  <ListItemText>Notes</ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon><SearchRounded /></ListItemIcon>
-                  <ListItemText>Search</ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon><HourglassBottomRounded /></ListItemIcon>
-                  <ListItemText>Study Plan</ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <Divider />
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon><Settings /></ListItemIcon>
-                  <ListItemText>Settings</ListItemText>
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Box>
-        </SwipeableDrawer>
+        <AppMenu />
         <>
         {
           tabParamsCollection.map((tab, id)=>
@@ -201,7 +162,7 @@ export default function Home() {
                 <Button onClick={()=>handleSetActiveTab(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
                   {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
                 </Button>
-                <TabMenu tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
+                <TabMenu id={tab.id} tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
               </Box>
               <Divider key={tab.tabID+"-divider"} orientation="vertical" flexItem role="presentation" />
             </Fragment>
@@ -393,7 +354,7 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
     </DialogActions>
   </Dialog>)
 }
-  const TabMenu:FC<{tabID:string, activeTabID:string, handleSetActiveTab:Function, handleClickEditTab:Function, handleDeleteTab:Function}> = ({tabID, activeTabID, handleSetActiveTab, handleClickEditTab, handleDeleteTab})=>{
+  const TabMenu:FC<{id:number, tabID:string, activeTabID:string, handleSetActiveTab:Function, handleClickEditTab:Function, handleDeleteTab:Function}> = ({id, tabID, activeTabID, handleSetActiveTab, handleClickEditTab, handleDeleteTab})=>{
     const [tabMenuAnchorElement, setTabMenuAnchorElement] = useState<null|HTMLElement>(null)
     const openTabMenu = Boolean(tabMenuAnchorElement)
     const handleOpenTabMenu = (ev:React.MouseEvent<HTMLButtonElement>)=>{
@@ -412,8 +373,8 @@ const EditTabDialog:FC<{tabParams:tabModel, setTabParams:Function, open:boolean}
             <ListItemIcon><Edit /></ListItemIcon>
             <ListItemText sx={{paddingRight:20}}>Edit tab</ListItemText>
           </MenuItem>
-          <MenuItem onClick={()=>handleDeleteTab(tabID)}>
-            <ListItemIcon><Delete /></ListItemIcon>
+          <MenuItem onClick={()=>handleDeleteTab(id, tabID)}>
+            <ListItemIcon><Close /></ListItemIcon>
             <ListItemText>Delete this tab</ListItemText>
           </MenuItem>
         </Menu>

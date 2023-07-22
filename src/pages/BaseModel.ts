@@ -21,6 +21,6 @@ export abstract class BaseModel{
     abstract update<Type extends searchHistory>(type:Type):Promise<QueryResult>
     abstract update<Type extends openedTab>(type:Type):Promise<QueryResult>
 
-    public delete = async(id:number)=>await (await this.databaseObject).execute(`DELETE ${this.table} WHERE id = ${id}`)
+    public delete = async(id:number)=>await (await this.databaseObject).execute(`DELETE FROM ${this.table} WHERE id = ${id}`)
     public dropTable = async()=>await (await this.databaseObject).execute(`DROP TABLE ${this.table}`)
 }

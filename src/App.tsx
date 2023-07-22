@@ -9,6 +9,7 @@ import { ThemeProvider, createTheme} from '@mui/material'
 import React from 'react'
 import Home from './Home';
 import { HistoriesPage } from './pages/TabHistory';
+import { SearchPage } from './pages/SearchPage';
 
 export default function App() {  
   const theme = React.useMemo(()=>{
@@ -35,6 +36,7 @@ export default function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/histories' element={<HistoriesPage />} />
+        <Route path='/search' element={<SearchPage />} />
       </Routes>
     </ThemeProvider>
     </Router>

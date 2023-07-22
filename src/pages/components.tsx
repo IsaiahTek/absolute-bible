@@ -1,12 +1,13 @@
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import referencesCollection from "../bible-cross-reference-json-master/combined_references_to_array.json"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
-import { ArrowDropDown, Visibility, VisibilityOff } from '@mui/icons-material'
-import { Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
+import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, History, Home } from '@mui/icons-material'
+import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
 import bibleIndex from "../bible_versions/bible-master/json/index.json"
 import { FC, useEffect, useState } from "react";
 import { fetchAndCommitBibleFile } from "../adapters";
-
+import { useLocation, useNavigate } from 'react-router-dom';
+export const bibleDefinition = bibleIndex
 export const Versions:FC<versionsProps> = ({collection, selected, handleSelect})=>{
     const getLastStringPart = (str:string)=>{
       let arr = str.split("_")
@@ -51,8 +52,8 @@ export const Chapters:FC<chaptersProps> = ({collection, selected, handleSelect})
     )
 }
 
-export const Search:FC<{bible:book[], version?:version}> = ({bible, version})=>{
-    const [results, setResults] = useState<{address:{book:string, chapter_id:number, verse_id:number}, text:string}[]>([])
+export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = ({bible, version})=>{
+    const [results, setResults] = useState<{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[]>([])
     const [searchKeyphrase, setSearchKeyphrase] = useState("")
     const unsearchedKeys = ["is", "us", "as", "of", "the", "but", "by", "at", "to", "that", "be", "he", "and", "she", "to", "this"]
     const [keyFragments, setKeyFragments] = useState<string[]>([])
@@ -73,18 +74,18 @@ export const Search:FC<{bible:book[], version?:version}> = ({bible, version})=>{
         setResults([])          // Empty the results when no search-text
         setFinishedSearching(false)
         if(searchKeyphrase.length > 4 && !unsearchedKeys.includes(searchKeyphrase)){
-            let foundResults:{address:{book:string, chapter_id:number, verse_id:number}, text:string}[] = []
-            bible.forEach((book, b_id)=>{
-                book.chapters.forEach((chapter, c_id)=>{
-                    chapter.forEach((verse, v_id)=>{
+            let foundResults:{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[] = []
+            bible.forEach((book, b_ID)=>{
+                book.chapters.forEach((chapter, c_ID)=>{
+                    chapter.forEach((verse, v_ID)=>{
                         if(new RegExp(keyRegPattern, "gi").test(verse)){
                             let  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
                                 return `<span class="highlight-text"><em>${match}</em></span>`
                             })
-                            let newObj = {"address":{book:book.name, chapter_id:c_id, verse_id:v_id}, "text":newText}
+                            let newObj = {"address":{book:book.name, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText}
                             foundResults.push(newObj)
                         }
-                        if(bible.length-1 === b_id && book.chapters.length-1 === c_id && chapter.length-1 === v_id){
+                        if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
                             setResults([...foundResults])
                             setFinishedSearching(true)
                         }
@@ -119,7 +120,7 @@ export const Search:FC<{bible:book[], version?:version}> = ({bible, version})=>{
                         </Box>
                         <Box sx={{maxHeight:"67vh", paddingTop:1, overflowY:"auto", backgroundColor:"#FEFEFE", tabIndex:2}}>
                         {results.map((result, id)=>
-                            <div style={{marginBottom:"10px"}} dangerouslySetInnerHTML={{__html:`<div>${result.address.book} ${result.address.chapter_id+1}: ${result.address.verse_id+1}: ${result.text}</div>`}} key={id}></div>
+                            <div style={{marginBottom:"10px"}} dangerouslySetInnerHTML={{__html:`<div>${result.address.book} ${result.address.chapter_ID+1}: ${result.address.verse_ID+1}: ${result.text}</div>`}} key={id}></div>
                         )}
                         </Box>
                     </>
@@ -308,4 +309,139 @@ export const getVersionUsingLanguageAndAbbreviation = (language:string, abbrev:s
   const versions = bibleIndex.find(a=>a.language===language)?.versions
   const version = versions?.find(v=>v.abbreviation===abbrev)
   return version?version:{name:"", abbreviation:""}
+}
+
+export const getNormalizedText = (val:string)=>{
+  // Replace all double spaces and more with just single space
+  return val.replace(/\s{2,}/gi, " ")
+}
+
+export const getSearchResult = (query:string, payload:searchPayload)=>{
+  const {bible, version} = payload
+  const results:searchResult[] = []
+  const searchKeyphrase = getNormalizedText(query)
+  const unsearchedKeys = ["is", "us", "as", "of", "the", "but", "by", "at", "to", "that", "be", "he", "and", "she", "to", "this"]
+  const keyFragments = searchKeyphrase.split(" ")
+  const keyRegPattern = keyFragments.reduce((acc, curVal, curInd, arr)=>{
+    console.log(curInd, arr.length)
+    return `${acc}(?=.*${curInd<arr.length-1?curVal+"|.*"+arr[curInd+1]:curVal})`
+  })
+  console.log(keyRegPattern)
+  function searchBibleAndCommitResult(){
+    if(searchKeyphrase.length > 4 && !unsearchedKeys.includes(searchKeyphrase)){
+      let foundResults:searchResult[] = []
+      bible.forEach((book, b_ID)=>{
+        book.chapters.forEach((chapter, c_ID)=>{
+          chapter.forEach((verse, v_ID)=>{
+            if(new RegExp(keyRegPattern, "gi").test(verse)){
+              let  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
+                return `<span class="highlight-text"><em>${match}</em></span>`
+              })
+              let newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:0}
+              foundResults.push(newObj)
+            }
+            if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
+              results.push(...foundResults)
+            }
+          })
+        })
+      })
+    }
+  }
+  searchBibleAndCommitResult()
+  return results
+}
+export const deepSearch = (query:string, payload:searchPayload)=>{
+  const {bible, version} = payload
+  let results:searchResult[] = []
+  const finalResults:searchResult[] = []
+  const keyFragments =  getNormalizedText(query).split(" ")
+  keyFragments.forEach((fragment, id)=>{
+    if(id === 0){
+      let foundResults:searchResult[] = []
+      bible.forEach((book, b_ID)=>{
+        book.chapters.forEach((chapter, c_ID)=>{
+          chapter.forEach((verse, v_ID)=>{
+            if(new RegExp(fragment, "gi").test(verse)){
+              let  newText = verse.replace(new RegExp(fragment, "gi"), (match)=>{
+                return `<span class="highlight-text"><em>${match}</em></span>`
+              })
+              let newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:0}
+              foundResults.push(newObj)
+            }
+            if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
+              results.push(...foundResults)
+            }
+          })
+        })
+      })
+    }else{
+      results.forEach((result, r_ID)=>{
+        if(new RegExp(fragment, "gi").test(result.text)){
+          let  newText = result.text.replace(new RegExp(fragment, "gi"), (match)=>{
+            return `<span class="highlight-text"><em>${match}</em></span>`
+          })
+          let editedObj = {...result, text:newText, rank:result.rank+1}
+          results = results.map(fR=>fR.address === editedObj.address?editedObj:fR)
+        }
+      })
+    }
+  })
+  return results.sort((a,b)=>b.rank-a.rank)
+}
+export const AppMenu = ()=>{
+  const routes = [
+    {pathname:"/", name:"Home", MenuIcon:Home, type:"link"},
+    {pathname:"/search", name:"Search", MenuIcon:SearchRounded, type:"link"},
+    {pathname:"/histories", name:"Usage Histories", MenuIcon:History, type:"link"},
+    {pathname:"/notes", name:"My Notes", MenuIcon:Note, type:"link"},
+    {pathname:"/study-plan", name:"Study Plans", MenuIcon:HourglassBottomRounded, type:"link"},
+    {type:"divider"},
+    {pathname:"/settings", name:"Settings", MenuIcon:Settings, type:"link"}
+  ]
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [openMainMenu, setOpenMainMenu] = useState(false)
+  return(
+    <>
+      <IconButton id="main_menu" color="primary" sx={{marginRight:2}} onClick={()=>setOpenMainMenu(true)}><MenuSharp /></IconButton>
+      <Divider sx={{position:"fixed", width:"100vw", top:40, left:0, zIndex:10}} />
+      <SwipeableDrawer anchor="left" open={openMainMenu} onOpen={()=>setOpenMainMenu(true)} onClose={()=>setOpenMainMenu(false)}>
+        <Box sx={{height:"100vh", width:250}}>
+          <Box sx={{paddingY:5, paddingX:2, display:"flex", alignItems:"center"}}>
+            <Box>
+              <Avatar  />
+            </Box>
+            <Box sx={{marginLeft:2}}>
+              <Typography variant='body1'>Not Login User</Typography>
+              <Typography variant='caption'>Login</Typography>
+            </Box>
+          </Box>
+          <Divider /> 
+          <List onClick={()=>setOpenMainMenu(false)} onKeyDown={()=>setOpenMainMenu(false)}>
+            {routes.map((r, id)=>{
+              const MenuIcon = r.MenuIcon
+              if(r.type === "divider"){
+                return <Divider key={id} />
+              }else if(r.pathname && MenuIcon){
+                return(
+                  <ListItem key={id} sx={{backgroundColor:r.pathname===location.pathname?"primary.light":"default"}} disablePadding>
+                    <ListItemButton onClick={()=>navigate(r.pathname)}>
+                      <ListItemIcon><MenuIcon /></ListItemIcon>
+                      <ListItemText>{r.name}</ListItemText>
+                    </ListItemButton>
+                  </ListItem>
+                )
+              }
+            })}
+          </List>
+          <Box position="absolute" bottom={0} width="100%" sx={{backgroundColor:"primary.light"}}>
+            <Box sx={{padding:2}}>
+              App Version: 01.01.001
+            </Box>
+          </Box>
+        </Box>
+      </SwipeableDrawer>
+    </>  
+  )
 }
