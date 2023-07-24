@@ -1,7 +1,7 @@
 import bibleIndex from "./bible_versions/bible-master/json/index.json"
-import { AppMenu, Chapters, Languages, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
-import { FC, Fragment, useEffect, useState } from 'react'
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, SwipeableDrawer, Typography, createTheme} from '@mui/material'
+import { AppMenu, Chapters, Languages, LoadingNotifier, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
+import { FC, Fragment, Suspense, useEffect, useState } from 'react'
+import { Box, Button, Card, CardActions, CardContent, CardMedia, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, SwipeableDrawer, Typography, createTheme} from '@mui/material'
 import { Add, ArrowDropDown, Close, Delete, Edit, History, HourglassBottomRounded, MenuSharp, MoreVert, Note, Remove, SearchRounded, Settings } from '@mui/icons-material'
 
 
@@ -77,9 +77,15 @@ export default function Home() {
       }
       setTabParamsCollection(computedTabsWithBooks)
       handleSetActiveTab(localStorage.getItem("activeTabID")?String(localStorage.getItem("activeTabID")):result[0].tabID)
+      setIsLoading(false)
     })
   }
-  useEffect(()=>fetchAndCommitOpenedTabs(), [])
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(()=>{
+    fetchAndCommitOpenedTabs()
+  }, [])
+  // useEffect(()=>{
+  // }, [])
   const [tabParamsCollection, setTabParamsCollection] = useState<resolvedOpenedTab[]>([])
   const [isCreateNewTab, setIsCreateNewTab] = useState(true)
   const handleAddTabToDB = (tab:addOpenedTab)=>{
@@ -117,8 +123,7 @@ export default function Home() {
   // useEffect(()=>{
   //   setActiveTabParams(tabParamsCollection.filter(param=>param.tabID === activeTabID)[0])
   // },[tabParamsCollection, activeTabID])
-  const activeBookName = activeTabParams?activeTabParams.bookName:null
-
+  
   const handleClickEditTab = ()=>{
     setIsCreateNewTab(false)
     setOpenTabDialog(true)
@@ -139,40 +144,48 @@ export default function Home() {
       handleEditTab({...activeTabParams, chapter_ID:activeTabParams.chapter_ID+1})
     }
   }
-
+  
   const handleDecrementChapter = ()=>{
     if(activeTabParams.chapter_ID > 0){
       handleEditTab({...activeTabParams, chapter_ID:activeTabParams.chapter_ID - 1})
     }
   }
-
+  
   const getVersionShortName = (name:string)=> name.split("_")[name.split("_").length - 1].toUpperCase()
+  const book_ID = activeTabParams?.book_ID
+  const books = activeTabParams?.books
+  const chapter_ID = activeTabParams?.chapter_ID
+  const activeChaptersLength = books?books[book_ID]?.chapters?.length:0
+  const activeBookName = activeTabParams?.bookName
   const navigate = useNavigate()
   return (
     <Box>
     {
+      isLoading?
+        <LoadingNotifier />
+      :
       tabParamsCollection.length?
-      <Box role="presentation" sx={{display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto"}}>
-        <AppMenu />
-        <>
-        {
-          tabParamsCollection.map((tab, id)=>
-            <Fragment key={tab.tabID}>
-              <Box key={tab.tabID+"box"} sx={{backgroundColor:tab.tabID===activeTabID?theme.palette.primary.main:"inherit", color:tab.tabID===activeTabID?"white":theme.palette.primary.main, paddingBottom:"2px", whiteSpace:"nowrap"}}>
-                <Button onClick={()=>handleSetActiveTab(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
-                  {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
-                </Button>
-                <TabMenu id={tab.id} tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
-              </Box>
-              <Divider key={tab.tabID+"-divider"} orientation="vertical" flexItem role="presentation" />
-            </Fragment>
-          )
-        }
-          <Box>
-            <IconButton color="primary" onClick={()=>handleAddTab()}><Add color="primary" /></IconButton>
-          </Box>
-        </>
-      </Box>
+        <Box role="presentation" sx={{display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto"}}>
+          <AppMenu />
+          <>
+          {
+            tabParamsCollection.map((tab, id)=>
+              <Fragment key={tab.tabID}>
+                <Box key={tab.tabID+"box"} sx={{backgroundColor:tab.tabID===activeTabID?theme.palette.primary.main:"inherit", color:tab.tabID===activeTabID?"white":theme.palette.primary.main, paddingBottom:"2px", whiteSpace:"nowrap"}}>
+                  <Button onClick={()=>handleSetActiveTab(tab.tabID)} color={tab.tabID===activeTabID?"primary":"inherit"} variant={tab.tabID===activeTabID?"contained":undefined}>
+                    {tab.bookName} {tab.chapter_ID+1} ({getVersionShortName(tab.versionAbbrev)})
+                  </Button>
+                  <TabMenu id={tab.id} tabID={tab.tabID} activeTabID={activeTabID} handleSetActiveTab={handleSetActiveTab} handleClickEditTab={handleClickEditTab} handleDeleteTab={handleDeleteTab} />
+                </Box>
+                <Divider key={tab.tabID+"-divider"} orientation="vertical" flexItem role="presentation" />
+              </Fragment>
+            )
+          }
+            <Box>
+              <IconButton color="primary" onClick={()=>handleAddTab()}><Add color="primary" /></IconButton>
+            </Box>
+          </>
+        </Box>
         :
         <>
         <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%", height:"100vh"}}>
@@ -188,22 +201,22 @@ export default function Home() {
                 <Typography gutterBottom variant="h5">Study</Typography>
                 <Typography variant="body2" >Study to show yourself approve unto GOD ...</Typography>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
                 <Button onClick={()=>handleAddTab()} variant="contained">Open Bible</Button>
-                <Button onClick={()=>navigate("/histories")}>App Histories</Button>
+                <Button variant="outlined" onClick={()=>navigate("/search")}>Search Bible</Button>
               </CardActions>
             </Card>
           </Box>
         </Box>
         </>
-        }
+      }
       <Box>
         {activeTabParams?
         <Box>
           <Box sx={{paddingLeft:3, display:"flex", alignItems:"center"}}>
             <Typography  sx={{marginRight:2}}>{activeTabParams?.versionAbbrev.split("_").join(" ").toUpperCase()}</Typography>
             <Divider role="presentation" orientation="vertical" flexItem />
-            <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton onClick={()=>handleDecrementChapter()} size="small"><Remove /></IconButton> Ch {activeTabParams.chapter_ID+1} <IconButton onClick={()=>handleIncrementChapter()} size="small"><Add /></IconButton></Box>
+            <Box sx={{marginLeft:2, display:"flex", alignItems:"center"}}>{activeBookName?.slice(0, 3)} <IconButton disabled={chapter_ID>0?false:true} color={chapter_ID>0?"primary":undefined} onClick={()=>handleDecrementChapter()} size="small"><Remove /></IconButton> Ch {chapter_ID+1} <IconButton color={activeChaptersLength-1>chapter_ID?"primary":undefined} onClick={()=>handleIncrementChapter()} size="small" disabled={activeChaptersLength-1>chapter_ID?false:true}><Add /></IconButton></Box>
           </Box>
           <Tab key={activeTabID} {...activeTabParams} />
         </Box>
@@ -212,7 +225,10 @@ export default function Home() {
       {isCreateNewTab?
         <CreateTabDialog setTabParams={handleAddTabToDB} open={openTabDialog}></CreateTabDialog>
       :
+      activeTabParams?
         <EditTabDialog key={activeTabID} setTabParams={handleEditTab} open={openTabDialog} tabParams={activeTabParams}></EditTabDialog>
+      :
+      null
       }
     </Box>
   )

@@ -52,10 +52,12 @@ export const Chapters:FC<chaptersProps> = ({collection, selected, handleSelect})
     )
 }
 
+const unsearchedKeys = ["is", "us", "as", "of", "the", "but", "by", "at", "to", "that", "be", "he", "and", "she", "to", "this"]
+export const isEfficientSearchText = (searchText:string)=>searchText.length > 2 && !unsearchedKeys.includes(searchText)
+
 export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = ({bible, version})=>{
     const [results, setResults] = useState<{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[]>([])
     const [searchKeyphrase, setSearchKeyphrase] = useState("")
-    const unsearchedKeys = ["is", "us", "as", "of", "the", "but", "by", "at", "to", "that", "be", "he", "and", "she", "to", "this"]
     const [keyFragments, setKeyFragments] = useState<string[]>([])
     const [keyRegPattern, setKeyRegPattern] = useState("")
     const [finishedSearching, setFinishedSearching] = useState(false)
@@ -73,7 +75,7 @@ export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = 
     async function searchBibleAndCommitResult(){
         setResults([])          // Empty the results when no search-text
         setFinishedSearching(false)
-        if(searchKeyphrase.length > 4 && !unsearchedKeys.includes(searchKeyphrase)){
+        if(isEfficientSearchText(searchKeyphrase)){
             let foundResults:{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[] = []
             bible.forEach((book, b_ID)=>{
                 book.chapters.forEach((chapter, c_ID)=>{
@@ -320,7 +322,6 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
   const {bible, version} = payload
   const results:searchResult[] = []
   const searchKeyphrase = getNormalizedText(query)
-  const unsearchedKeys = ["is", "us", "as", "of", "the", "but", "by", "at", "to", "that", "be", "he", "and", "she", "to", "this"]
   const keyFragments = searchKeyphrase.split(" ")
   const keyRegPattern = keyFragments.reduce((acc, curVal, curInd, arr)=>{
     console.log(curInd, arr.length)
@@ -328,7 +329,7 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
   })
   console.log(keyRegPattern)
   function searchBibleAndCommitResult(){
-    if(searchKeyphrase.length > 4 && !unsearchedKeys.includes(searchKeyphrase)){
+    if(isEfficientSearchText(searchKeyphrase)){
       let foundResults:searchResult[] = []
       bible.forEach((book, b_ID)=>{
         book.chapters.forEach((chapter, c_ID)=>{
@@ -354,40 +355,48 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
 export const deepSearch = (query:string, payload:searchPayload)=>{
   const {bible, version} = payload
   let results:searchResult[] = []
-  const finalResults:searchResult[] = []
-  const keyFragments =  getNormalizedText(query).split(" ")
-  keyFragments.forEach((fragment, id)=>{
-    if(id === 0){
-      let foundResults:searchResult[] = []
-      bible.forEach((book, b_ID)=>{
-        book.chapters.forEach((chapter, c_ID)=>{
-          chapter.forEach((verse, v_ID)=>{
-            if(new RegExp(fragment, "gi").test(verse)){
-              let  newText = verse.replace(new RegExp(fragment, "gi"), (match)=>{
-                return `<span class="highlight-text"><em>${match}</em></span>`
+  const keyFragments =  getNormalizedText(query.trim()).split(" ")
+  return new Promise<searchResult[]>((resolve, reject)=>{
+    if(isEfficientSearchText(query)){
+      // 
+      keyFragments.forEach((fragment, id)=>{
+        if(isEfficientSearchText(fragment)){
+          if(id === 0){
+            let foundResults:searchResult[] = []
+            bible.forEach((book, b_ID)=>{
+              book.chapters.forEach((chapter, c_ID)=>{
+                chapter.forEach((verse, v_ID)=>{
+                  if(new RegExp(fragment, "gi").test(verse)){
+                    let  newText = verse.replace(new RegExp(fragment, "gi"), (match)=>{
+                      return `<span class="highlight-text"><em>${match}</em></span>`
+                    })
+                    let newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:1}
+                    foundResults.push(newObj)
+                  }
+                  if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
+                    results.push(...foundResults)
+                  }
+                })
               })
-              let newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:0}
-              foundResults.push(newObj)
-            }
-            if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
-              results.push(...foundResults)
-            }
-          })
-        })
-      })
-    }else{
-      results.forEach((result, r_ID)=>{
-        if(new RegExp(fragment, "gi").test(result.text)){
-          let  newText = result.text.replace(new RegExp(fragment, "gi"), (match)=>{
-            return `<span class="highlight-text"><em>${match}</em></span>`
-          })
-          let editedObj = {...result, text:newText, rank:result.rank+1}
-          results = results.map(fR=>fR.address === editedObj.address?editedObj:fR)
+            })
+          }else{
+            results.forEach((result, r_ID)=>{
+              if(new RegExp(fragment, "gi").test(result.text)){
+                let  newText = result.text.replace(new RegExp(fragment, "gi"), (match)=>{
+                  return `<span class="highlight-text"><em>${match}</em></span>`
+                })
+                let editedObj = {...result, text:newText, rank:result.rank+1}
+                results = results.map(fR=>fR.address === editedObj.address?editedObj:fR)
+              }
+            })
+          }
         }
       })
+      resolve(results.sort((a,b)=>b.rank-a.rank))
+    }else{
+      reject("Invalid search text")
     }
   })
-  return results.sort((a,b)=>b.rank-a.rank)
 }
 export const AppMenu = ()=>{
   const routes = [
@@ -404,8 +413,12 @@ export const AppMenu = ()=>{
   const [openMainMenu, setOpenMainMenu] = useState(false)
   return(
     <>
-      <IconButton id="main_menu" color="primary" sx={{marginRight:2}} onClick={()=>setOpenMainMenu(true)}><MenuSharp /></IconButton>
-      <Divider sx={{position:"fixed", width:"100vw", top:40, left:0, zIndex:10}} />
+      <Box sx={{marginRight:5}}>
+        <Box sx={{position:"fixed", width:50, top:0, left:0, zIndex:10, backgroundColor:"white"}}>
+          <IconButton id="main_menu" color="primary" sx={{position:"sticky", top:30, left:2}} onClick={()=>setOpenMainMenu(true)}><MenuSharp /></IconButton>
+          <Divider sx={{width:"100vw"}} />
+        </Box>
+      </Box>
       <SwipeableDrawer anchor="left" open={openMainMenu} onOpen={()=>setOpenMainMenu(true)} onClose={()=>setOpenMainMenu(false)}>
         <Box sx={{height:"100vh", width:250}}>
           <Box sx={{paddingY:5, paddingX:2, display:"flex", alignItems:"center"}}>
@@ -443,5 +456,17 @@ export const AppMenu = ()=>{
         </Box>
       </SwipeableDrawer>
     </>  
+  )
+}
+export const LoadingNotifier = (prop:any)=>{
+  return(
+    <Box >
+      <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", height:"100vh", flexDirection:"column"}} {...prop}>
+        <Box>
+          <CircularProgress />
+        </Box>
+        <Typography>Loading...</Typography>
+      </Box>
+    </Box>
   )
 }

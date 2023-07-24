@@ -64,7 +64,7 @@ type tab = {
 type addTabHistory = {tab:tab, date:string}
 interface tabHistory extends addTabHistory { id:number }
 type tabHistoryCollection = tabHistory[]
-type addSearchHistory = {searchPhrase:string, language:language, version:version, bookName:book["name"]|"all", date:string}
+type addSearchHistory = {searchText:string, language:string, versionAbbrev:string, bookName:book["name"]|"all", resultLength:number, timestamp:string}
 interface searchHistory extends addSearchHistory {id:number}
 type searchHistoryCollection = searchHistory[]
 type addOpenedTab = tab
