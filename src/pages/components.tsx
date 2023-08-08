@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import referencesCollection from "../bible-cross-reference-json-master/combined_references_to_array.json"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
-import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, History, Home } from '@mui/icons-material'
+import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, History, Home, Help, Info, Support } from '@mui/icons-material'
 import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
 import bibleIndex from "../bible_versions/bible-master/json/index.json"
 import { FC, useEffect, useState } from "react";
@@ -402,11 +402,15 @@ export const AppMenu = ()=>{
   const routes = [
     {pathname:"/", name:"Home", MenuIcon:Home, type:"link"},
     {pathname:"/search", name:"Search", MenuIcon:SearchRounded, type:"link"},
-    {pathname:"/histories", name:"Usage Histories", MenuIcon:History, type:"link"},
+    // {pathname:"/histories", name:"Usage Histories", MenuIcon:History, type:"link"},
     {pathname:"/notes", name:"My Notes", MenuIcon:Note, type:"link"},
     {pathname:"/study-plan", name:"Study Plans", MenuIcon:HourglassBottomRounded, type:"link"},
     {type:"divider"},
-    {pathname:"/settings", name:"Settings", MenuIcon:Settings, type:"link"}
+    {pathname:"/settings", name:"Settings", MenuIcon:Settings, type:"link"},
+    {type:"divider"},
+    {pathname:"/help", name:"Help", MenuIcon:Help, type:"link"},
+    {pathname:"/about", name:"About", MenuIcon:Info, type:"link"},
+    {pathname:"/donate", name:"Support Absolute Bible", MenuIcon:Support, type:"link"},
   ]
   const navigate = useNavigate()
   const location = useLocation()

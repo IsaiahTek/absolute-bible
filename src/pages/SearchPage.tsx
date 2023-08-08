@@ -92,7 +92,7 @@ export const SearchPage = ()=>{
                     :
                     <Box sx={{marginTop:5}}>
                         {searchResults.map(result=>
-                            <Box key={result.address.bookName+result.address.chapter_ID+result.address.verse_ID}>
+                            <Box key={result.address.bookName+" "+result.address.chapter_ID+" : "+result.address.verse_ID}>
                                 <Box sx={{marginY:2}}>
                                     <span>{result.address.bookName+" "+(result.address.chapter_ID+1)+" : "+(result.address.verse_ID+1)}</span>
                                     <Typography dangerouslySetInnerHTML={{__html:result.text}}></Typography>
