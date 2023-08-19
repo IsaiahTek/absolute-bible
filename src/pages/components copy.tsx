@@ -4,7 +4,7 @@ import EN_ESV from "../bible-version-adapters/ESV_TO_APP_STANDARD";
 import NG_YORUBA from "../bible-version-adapters/YORUBA_TO_APP_STANDARD";
 import {BibleJSON_FROM_XML} from "../bible-version-adapters/XML_TO_STANDARD"
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import referencesCollection from "../bible-cross-reference-json-master/combined_references_to_array.json"
+import referencesCollection from "../bible-cross-reference-json-master/combined_references_to_array"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
 import { Add, ArrowDropDown, Visibility, VisibilityOff } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemText, MenuItem, Select, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";

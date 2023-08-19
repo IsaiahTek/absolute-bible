@@ -1,12 +1,13 @@
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import referencesCollection from "../bible-cross-reference-json-master/combined_references_to_array.json"
+import {combinedReferences} from "../bible-cross-reference-json-master/combined_references_to_array"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
 import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, History, Home, Help, Info, Support } from '@mui/icons-material'
-import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
+import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SvgIconTypeMap, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
 import bibleIndex from "../bible_versions/bible-master/json/index.json"
 import { FC, useEffect, useState } from "react";
 import { fetchAndCommitBibleFile } from "../adapters";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { OverridableComponent } from '@mui/material/OverridableComponent';
 export const bibleDefinition = bibleIndex
 export const Versions:FC<versionsProps> = ({collection, selected, handleSelect})=>{
     const getLastStringPart = (str:string)=>{
@@ -207,7 +208,7 @@ export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
     refAddr[0] = refAddr[0].toUpperCase().includes("SONG")?"SOS":refAddr[0]
     refAddr[0] = refAddr[0].replaceAll(" ", "").substring(0,3).toUpperCase()
     
-    return referencesCollection.find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
+    return combinedReferences.find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
   }
 
   const getVerseFromRef = (verseRef:string[])=>{
@@ -398,6 +399,9 @@ export const deepSearch = (query:string, payload:searchPayload)=>{
     }
   })
 }
+type routes = {pathname:string|undefined, name:string|undefined, MenuIcon:OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; }|undefined, type:string}[];
+
+
 export const AppMenu = ()=>{
   const routes = [
     {pathname:"/", name:"Home", MenuIcon:Home, type:"link"},
