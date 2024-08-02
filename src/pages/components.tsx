@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
-import {combinedReferences} from "../bible-cross-reference-json-master/combined_references_to_array"
+import combinedReferences from "../bible-cross-reference-json-master/combined_references_to_array.json"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
 import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, History, Home, Help, Info, Support } from '@mui/icons-material'
 import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SvgIconTypeMap, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
@@ -428,10 +428,10 @@ export const AppMenu = ()=>{
         </Box>
       </Box>
       <SwipeableDrawer anchor="left" open={openMainMenu} onOpen={()=>setOpenMainMenu(true)} onClose={()=>setOpenMainMenu(false)}>
-        <Box sx={{height:"100vh", width:250}}>
+        <Box sx={{height:"100vh", width:300}}>
           <Box sx={{paddingY:5, paddingX:2, display:"flex", alignItems:"center"}}>
             <Box>
-              <Avatar  />
+              <Avatar sx={{width:48, height:48}} />
             </Box>
             <Box sx={{marginLeft:2}}>
               <Typography variant='body1'>Not Login User</Typography>
