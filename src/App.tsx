@@ -32,13 +32,13 @@ export default function App() {
   
   return (
     <Router>
-    <ThemeProvider theme={theme}>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/histories' element={<HistoriesPage />} />
-        <Route path='/search' element={<SearchPage />} />
-      </Routes>
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/histories' element={<HistoriesPage />} />
+          <Route path='/search' element={<SearchPage />} />
+        </Routes>
+      </ThemeProvider>
     </Router>
   )
 }

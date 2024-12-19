@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { AppMenu, LoadingNotifier, bibleDefinition, deepSearch, isEfficientSearchText } from "./components"
 import { fetchAndCommitBibleFile } from "../adapters"
 import { useNavigate } from "react-router-dom"
-import { SearchHistoryModel } from "./SearchHistoryModel"
+import { SearchHistoryModel } from "../models/SearchHistoryModel"
 
 export const SearchPage = ()=>{
     const searchHistory = new SearchHistoryModel()
@@ -20,7 +20,7 @@ export const SearchPage = ()=>{
 
     const [isSearching, setIsSearching] = useState(false)
     useEffect(()=>{
-        fetchAndCommitBibleFile(selectedVersion, setBible)
+        fetchAndCommitBibleFile(selectedVersion, setBible);
         searchHistory.fetch().then(result=>{setSearchHistories(result); console.log(result)})
     }, [])
     const seePreviousSearchResult = (historyText:string)=>{
@@ -38,9 +38,9 @@ export const SearchPage = ()=>{
                 if(isEfficientSearchText(searchText)){
                     console.log(r.length)
                     searchHistory.add(sH).then(res=>{
-                        if(res.rowsAffected===1){
-                            setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId}])
-                        }
+                        // if(res.rowsAffected===1){
+                        //     setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId}])
+                        // }
                     })
                 }
                 setTimeout(()=>{
@@ -59,7 +59,7 @@ export const SearchPage = ()=>{
             <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
                 <AppMenu />
                 <Box sx={{backgroundColor:"white", paddingY:.8, position:"fixed", zIndex:5, top:0, left:60, width:"90vw"}}>
-                    <Button size="small"><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
+                    <Button size="small" onClick={()=>navigate('/')} ><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
                 </Box>
             </Box>
             <Grid2 container>

@@ -208,7 +208,7 @@ export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
     refAddr[0] = refAddr[0].toUpperCase().includes("SONG")?"SOS":refAddr[0]
     refAddr[0] = refAddr[0].replaceAll(" ", "").substring(0,3).toUpperCase()
     
-    return combinedReferences.find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
+    return (combinedReferences as any[]).find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
   }
 
   const getVerseFromRef = (verseRef:string[])=>{
