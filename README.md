@@ -1,6 +1,13 @@
-# Getting Started with Create React App
+# Absolute Bible App (Web Version)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was created out of the need for having multi-version and multi-lingual bible app for studies and research. And as such, key features of this app include:
+1. Cross-references
+2. Cross-tab/pan of various versions and books opened concurrently(side-by-side)
+3. Multi-version
+4. Multi-lingual
+5. Read History
+6. Search history
+More to be added soon
 
 ## Available Scripts
 
@@ -39,8 +46,6 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+## Collaboration/Support
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Reach out to Engr., Isaiah Pius E. [Send a mail](mailto://isaiahtech1@gmail.com).

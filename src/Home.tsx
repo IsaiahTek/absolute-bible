@@ -13,7 +13,7 @@ import React from 'react'
 import { generateRandomKey } from "./string_helper"
 import { fetchAndCommitBibleFile, fetchBible } from "./adapters"
 import { useNavigate } from "react-router-dom"
-import { OpenedTab } from "./pages/TabHistory"
+import { OpenedTab } from "./models/OpenedTabModel"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -69,14 +69,18 @@ export default function Home() {
   const fetchAndCommitOpenedTabs = (offset?:number, amount?:number)=>{
     openedTab.fetch(offset, amount).then(async(result)=>{
       // fetchAndCommitBibleFile()
+      console.log("FOUND TABS", result)
       let computedTabsWithBooks = []
       for(let i = 0; i < result.length; i++){
         let res = result[i]
-        let books = fetchBible(getVersionUsingLanguageAndAbbreviation(res.language, res.versionAbbrev)).then(r=>r)
+        let books = fetchBible(getVersionUsingLanguageAndAbbreviation(res.language, res.versionAbbrev)).then(r=>r);
         computedTabsWithBooks.push({books:(await books), ...res})
       }
+      console.log("Computed Tabs", computedTabsWithBooks);
       setTabParamsCollection(computedTabsWithBooks)
-      handleSetActiveTab(localStorage.getItem("activeTabID")?String(localStorage.getItem("activeTabID")):result[0].tabID)
+      if(result != undefined && result.length > 0){
+        handleSetActiveTab(localStorage.getItem("activeTabID")?String(localStorage.getItem("activeTabID")):result[0].tabID)
+      }
       setIsLoading(false)
     })
   }

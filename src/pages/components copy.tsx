@@ -328,7 +328,7 @@ export const Tab:FC<{tabID:string, bibleAddress?:{language:language, version:ver
       refAddr[0] = refAddr[0].toUpperCase().includes("SONG")?"SOS":refAddr[0]
       refAddr[0] = refAddr[0].replaceAll(" ", "").substring(0,3).toUpperCase()
       
-      return referencesCollection.find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
+      return (referencesCollection as Array<any>).find((ref: { verse: any[] })=>ref.verse.join(" ") === refAddr.join(" "))?.references
     }
   
     const getVerseFromRef = (verseRef:string[])=>{
