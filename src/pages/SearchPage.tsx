@@ -56,12 +56,12 @@ export const SearchPage = ()=>{
     const navigate = useNavigate()
     return(
         <Box>
-            <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
+            {/* <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
                 <AppMenu />
                 <Box sx={{backgroundColor:"white", paddingY:.8, position:"fixed", zIndex:5, top:0, left:60, width:"90vw"}}>
                     <Button size="small" onClick={()=>navigate('/')} ><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
                 </Box>
-            </Box>
+            </Box> */}
             <Grid2 container>
                 <Grid2 sm={3}>
                     <Box sx={{paddingX:2, minHeight:"91vh", maxHeight:"91vh", paddingTop:4}}>

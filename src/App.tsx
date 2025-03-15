@@ -15,8 +15,9 @@ import { AppMenu } from './pages/components';
 import { Backspace } from '@mui/icons-material';
 
 function DynamicTopMenu(){
-  const currentPageName = window.location.pathname;
-  if(currentPageName !== "/"){
+  const currentPageName = window.location.href;
+  if(!currentPageName.endsWith("/")){
+    console.log(currentPageName)
     return (
       <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
         <AppMenu />
@@ -26,6 +27,7 @@ function DynamicTopMenu(){
     </Box>
     )
   }else{
+    console.log(currentPageName)
     return (<AppMenu />);
   }
 }
