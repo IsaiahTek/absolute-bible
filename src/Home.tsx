@@ -169,8 +169,8 @@ export default function Home() {
         <LoadingNotifier />
       :
       tabParamsCollection.length?
-        <Box role="presentation" sx={{display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", backgroundColor:"transparent"}}>
-          <AppMenu />
+        <Box role="presentation" sx={{display:"flex", paddingLeft:5, marginLeft:2, alignItems:"center", overflowX:"auto", backgroundColor:"transparent"}}>
+          {/* <AppMenu /> */}
           <>
           {
             tabParamsCollection.map((tab, id)=>

@@ -4,17 +4,16 @@ export class TabHistory extends BaseModel{
     constructor(){
         super();
         this.table = "tab_histories";
-        this.createTable("id");
+        this.createTable(["id number Primary Key", "tab TEXT UNIQUE", "date TEXT"])
     }
     public fetch = async(offset=0, amount=30)=>{
-        const queryObject = await this.prepareFetch(offset, amount);
-        return queryObject.results;
+        return await (await this.databaseObject).select<tabHistory[]>(`SELECT * FROM ${this.table} LIMIT ${offset}, ${amount}`)
     }
     public add = async(tabHistory:addTabHistory)=>{
-        (await this.store).add({tab: JSON.stringify(tabHistory.tab), date: tabHistory.date});
+        return await (await this.databaseObject).execute(`INSERT INTO ${this.table} (tab, date) VALUES ('${JSON.stringify(tabHistory.tab)}', '${tabHistory.date}')`)
     }
     public update = async(tabHistory: tabHistory) => {
-        (await this.store).put({id: tabHistory.id, tab: JSON.stringify(tabHistory.tab), date: tabHistory.date})
+        return await (await this.databaseObject).execute(`UPDATE ${this.table} SET(tab) VALUES('${JSON.stringify(tabHistory.tab)}') WHERE id = ${tabHistory.id}`)
     }
     
 }

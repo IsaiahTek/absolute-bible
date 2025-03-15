@@ -51,7 +51,16 @@ interface chaptersProps{
     handleSelect?:Function
 }
 type adapterVersions = {abbreviation:"asv"|"bible_esv"|"yoruba-bible"|"kjv", name:string}
-type verseAddress = {book_ID:number, chapter_ID:number, verse_ID:number}
+
+type verseAddress = {
+    book_ID:number,
+    chapter_ID:number,
+    verse_ID:number,
+    versionAbbrev?:string,
+    language?: string,
+    bookName?: string,
+}
+
 type tab = {
     tabID: string;
     book_ID: number;

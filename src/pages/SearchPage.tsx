@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { AppMenu, LoadingNotifier, bibleDefinition, deepSearch, isEfficientSearchText } from "./components"
 import { fetchAndCommitBibleFile } from "../adapters"
 import { useNavigate } from "react-router-dom"
-import { SearchHistoryModel } from "./SearchHistoryModel"
+import { SearchHistoryModel } from "../models/SearchHistoryModel"
 import { OpenedTab } from "../models/OpenedTabModel"
 import { generateRandomKey } from "../string_helper"
 
@@ -75,9 +75,9 @@ export const SearchPage = ()=>{
     return(
         <Box>
             <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
-                <AppMenu />
+                {/* <AppMenu /> */}
                 <Box sx={{backgroundColor:"white", paddingY:.8, position:"fixed", zIndex:5, top:0, left:60, width:"90vw"}}>
-                    <Button size="small"><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
+                    <Button size="small" onClick={()=>window.history.back()}><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
                 </Box>
             </Box>
             <Grid2 container>
