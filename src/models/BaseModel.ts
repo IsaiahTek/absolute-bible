@@ -109,6 +109,8 @@ export abstract class BaseModel {
     // public delete = async(id:number)=>await (await this.databaseObject).execute(`DELETE FROM ${this.table} WHERE id = ${id}`)
     // public dropTable = async()=>await (await this.databaseObject).execute(`DROP TABLE ${this.table}`)
 
-    public delete = async (id: number) => { }
+    public delete = async (id: number) => {
+        return (await (this.store)).delete(id);
+    }
     public dropTable = async (id: number) => { }
 }
