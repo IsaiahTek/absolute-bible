@@ -1,6 +1,5 @@
 
 (async ()=>{
-    const { nextTick } = require("process")
     const {readFile, writeFile} = require("fs/promises")
     let fileContent = null
     let map = []

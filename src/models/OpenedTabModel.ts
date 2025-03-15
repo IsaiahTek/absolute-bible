@@ -24,7 +24,13 @@ export class OpenedTab extends BaseModel{
     public add = async(tab:tab)=>{
         // const transaction = (this.databaseObject).transaction(this.table, 'readwrite');
         // const store = transaction.objectStore(this.table);
-        (await this.store).add({tabID:tab.tabID, bookName:tab.bookName, language:tab.language, versionAbbrev: tab.versionAbbrev, book_ID: tab.book_ID, chapter_ID: tab.chapter_ID, verse_ID: tab.verse_ID});
+        let tabs:tabModel[] = await this.fetch();
+        if(!tabs.some((t)=>t.book_ID === tab.book_ID && t.versionAbbrev === tab.versionAbbrev && t.chapter_ID === tab.chapter_ID && t.language === tab.language)){
+            (await this.store).add({tabID:tab.tabID, bookName:tab.bookName, language:tab.language, versionAbbrev: tab.versionAbbrev, book_ID: tab.book_ID, chapter_ID: tab.chapter_ID, verse_ID: tab.verse_ID});
+            return true;
+        }else{
+            return false;
+        }
     }
     public update = async(tab: openedTab) => {
         (await this.store).put({id: tab.id, tabID:tab.tabID, bookName:tab.bookName, language:tab.language, versionAbbrev: tab.versionAbbrev, book_ID: tab.book_ID, chapter_ID: tab.chapter_ID, verse_ID: tab.verse_ID})

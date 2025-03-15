@@ -5,7 +5,9 @@ import { useEffect, useState } from "react"
 import { AppMenu, LoadingNotifier, bibleDefinition, deepSearch, isEfficientSearchText } from "./components"
 import { fetchAndCommitBibleFile } from "../adapters"
 import { useNavigate } from "react-router-dom"
-import { SearchHistoryModel } from "../models/SearchHistoryModel"
+import { SearchHistoryModel } from "./SearchHistoryModel"
+import { OpenedTab } from "../models/OpenedTabModel"
+import { generateRandomKey } from "../string_helper"
 
 export const SearchPage = ()=>{
     const searchHistory = new SearchHistoryModel()
@@ -18,9 +20,25 @@ export const SearchPage = ()=>{
     const [bible, setBible] = useState<book[]>([])
     const searchPayLoad:searchPayload = {bible:bible, version:selectedVersion}
 
+    async function handleAddToTabs(bookName:string, chapter_ID:number){
+        const openedTab = new OpenedTab();
+
+        let book_ID:number = bible.findIndex((b)=>b.name === bookName);
+
+        const selectedBibleParams:addOpenedTab = {tabID:generateRandomKey(), bookName:bookName, versionAbbrev:selectedVersion.abbreviation, language:selectedLanguage, book_ID:book_ID, chapter_ID:chapter_ID};
+
+        openedTab.add(selectedBibleParams).then((result)=>{
+            if(result){
+                localStorage.setItem("activeTabID", selectedBibleParams.tabID);
+                console.log("ADDED TAB");
+            }
+        });
+
+    }
+
     const [isSearching, setIsSearching] = useState(false)
     useEffect(()=>{
-        fetchAndCommitBibleFile(selectedVersion, setBible);
+        fetchAndCommitBibleFile(selectedVersion, setBible)
         searchHistory.fetch().then(result=>{setSearchHistories(result); console.log(result)})
     }, [])
     const seePreviousSearchResult = (historyText:string)=>{
@@ -38,9 +56,9 @@ export const SearchPage = ()=>{
                 if(isEfficientSearchText(searchText)){
                     console.log(r.length)
                     searchHistory.add(sH).then(res=>{
-                        // if(res.rowsAffected===1){
-                        //     setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId}])
-                        // }
+                        if(res.rowsAffected===1){
+                            setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId??0}])
+                        }
                     })
                 }
                 setTimeout(()=>{
@@ -59,7 +77,7 @@ export const SearchPage = ()=>{
             <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
                 <AppMenu />
                 <Box sx={{backgroundColor:"white", paddingY:.8, position:"fixed", zIndex:5, top:0, left:60, width:"90vw"}}>
-                    <Button size="small" onClick={()=>navigate('/')} ><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
+                    <Button size="small"><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>
                 </Box>
             </Box>
             <Grid2 container>
@@ -98,7 +116,7 @@ export const SearchPage = ()=>{
                                     <Typography dangerouslySetInnerHTML={{__html:result.text}}></Typography>
                                     <Typography variant="caption"><Chip size="small" label={result.rank} /></Typography>
                                     <Box sx={{marginTop:1}}>
-                                        <Button size="small">Add to opened Bible Tabs</Button>
+                                        <Button size="small" onClick={()=>handleAddToTabs(result.address.bookName, result.address.chapter_ID)}>Add to opened Bible Tabs</Button>
                                     </Box>
                                 </Box>
                                 <Divider />

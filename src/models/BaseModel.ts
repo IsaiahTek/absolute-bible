@@ -83,6 +83,7 @@ export abstract class BaseModel {
                     if(!cursor){
                         resolve(queryObject);
                     }
+                    console.log("DONE PREPARING FETCH");
                 };
                 request.onerror = (err)=>{
                     console.warn("ERROR FETCHING DATA", err);

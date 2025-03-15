@@ -7,10 +7,6 @@
                 "abbreviation": "en_kjv"
             },
             {
-                "name": "Basic English (BBE)",
-                "abbreviation": "en_bbe"
-            },
-            {
                 "name": "American Standard Version (ASV)",
                 "abbreviation": "asv"
             },
@@ -29,6 +25,18 @@
             {
                 "name": "The Message (MSG)",
                 "abbreviation": "Bible_English_MSG"
+            },
+            {
+                "name": "New Living Translation (NLT)",
+                "abbreviation": "Bible_English_NLT"
+            },
+            {
+                "name": "New Life Version (NLV)",
+                "abbreviation": "Bible_English_NLV"
+            },
+            {
+                "name": "Basic English (BBE)",
+                "abbreviation": "en_bbe"
             }
         ]
     },
