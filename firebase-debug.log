@@ -1,0 +1,30 @@
+[debug] [2025-03-19T10:00:33.758Z] ----------------------------------------------------------------------
+[debug] [2025-03-19T10:00:33.761Z] Command:       /home/isaiah/.nvm/versions/node/v22.5.1/bin/node /home/isaiah/.nvm/versions/node/v22.5.1/bin/firebase deploy
+[debug] [2025-03-19T10:00:33.761Z] CLI Version:   13.17.0
+[debug] [2025-03-19T10:00:33.761Z] Platform:      linux
+[debug] [2025-03-19T10:00:33.761Z] Node Version:  v22.5.1
+[debug] [2025-03-19T10:00:33.762Z] Time:          Wed Mar 19 2025 11:00:33 GMT+0100 (West Africa Standard Time)
+[debug] [2025-03-19T10:00:33.762Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-03-19T10:00:33.841Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-03-19T10:00:33.842Z] > authorizing via signed-in user (isaiahtech1@gmail.com)
+[debug] [2025-03-19T10:00:33.842Z] [iam] checking project absolute-bible for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-03-19T10:00:33.846Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/absolute-bible:testIamPermissions [none]
+[debug] [2025-03-19T10:00:33.846Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/absolute-bible:testIamPermissions x-goog-quota-user=projects/absolute-bible
+[debug] [2025-03-19T10:00:33.846Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/absolute-bible:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-03-19T10:00:34.886Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/absolute-bible:testIamPermissions 200
+[debug] [2025-03-19T10:00:34.886Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/absolute-bible:testIamPermissions {}
+[debug] [2025-03-19T10:00:34.887Z] [iam] error while checking permissions, command may fail: FirebaseError: Authorization failed. This account is missing the following required permissions on project absolute-bible:
+
+  firebase.projects.get
+  firebasehosting.sites.update
+[debug] [2025-03-19T10:00:34.890Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/absolute-bible [none]
+[debug] [2025-03-19T10:00:35.680Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/absolute-bible 403
+[debug] [2025-03-19T10:00:35.680Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/absolute-bible {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-03-19T10:00:35.683Z] HTTP Error: 403, The caller does not have permission
+[debug] [2025-03-19T10:00:35.684Z] FirebaseError: HTTP Error: 403, The caller does not have permission
+    at responseToError (/home/isaiah/.nvm/versions/node/v22.5.1/lib/node_modules/firebase-tools/lib/responseToError.js:49:12)
+    at RetryOperation._fn (/home/isaiah/.nvm/versions/node/v22.5.1/lib/node_modules/firebase-tools/lib/apiv2.js:305:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to get Firebase project absolute-bible. Please make sure the project exists and your account has permission to access it.
