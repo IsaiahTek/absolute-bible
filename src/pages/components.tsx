@@ -1,17 +1,16 @@
 import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import combinedReferences from "../bible-cross-reference-json-master/combined_references_to_array.json"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
-import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, History, Home, Help, Info, Support } from '@mui/icons-material'
-import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SvgIconTypeMap, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
+import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, Home, Help, Info, Support } from '@mui/icons-material'
+import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
 import bibleIndex from "../bible_versions/bible-master/json/index.json"
 import { FC, useEffect, useState } from "react";
 import { fetchAndCommitBibleFile } from "../adapters";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
 export const bibleDefinition = bibleIndex
 export const Versions:FC<versionsProps> = ({collection, selected, handleSelect})=>{
     const getLastStringPart = (str:string)=>{
-      let arr = str.split("_")
+      const arr = str.split("_")
       return arr[arr.length-1]
     }
     return(<ButtonGroup>{collection.map(version =><Button variant={version.name===selected?.name?"contained":"outlined"} key={version.name} onClick={()=>handleSelect(version)}>{getLastStringPart(version.abbreviation)}</Button>)}</ButtonGroup>)
@@ -28,7 +27,7 @@ export const Languages:FC<languageProps> = ({collection, selected, handleSelect}
 }
 export const Books:FC<booksProps> = ({collection, selected, handleSelect})=>{
     const [openBooks, setOpenBooks] = useState(true)
-    const openBooksOnMobile = ((typeof selected != "undefined" && selected < 0) || openBooks)?true:false
+    const openBooksOnMobile = ((typeof selected !== "undefined" && selected < 0) || openBooks)?true:false
 
     return(
         <>
@@ -77,15 +76,15 @@ export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = 
         setResults([])          // Empty the results when no search-text
         setFinishedSearching(false)
         if(isEfficientSearchText(searchKeyphrase)){
-            let foundResults:{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[] = []
+            const foundResults:{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[] = []
             bible.forEach((book, b_ID)=>{
                 book.chapters.forEach((chapter, c_ID)=>{
                     chapter.forEach((verse, v_ID)=>{
                         if(new RegExp(keyRegPattern, "gi").test(verse)){
-                            let  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
+                            const  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
                                 return `<span class="highlight-text"><em>${match}</em></span>`
                             })
-                            let newObj = {"address":{book:book.name, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText}
+                            const newObj = {"address":{book:book.name, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText}
                             foundResults.push(newObj)
                         }
                         if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
@@ -191,7 +190,7 @@ export const MultiVersionVerseGroup:FC<{selectedVersion:version, verseAddress:ve
 export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName, books})=>{
   // const [books, setBooks] = useState<book[]>([])
   // useEffect(()=>fetchAndCommitBibleFile(getVersionUsingLanguageAndAbbreviation(language, versionAbbrev), setBooks), [tabID])
-  const chapterNumber = chapter_ID + 1
+  // const chapterNumber = chapter_ID + 1
   const book = books[book_ID]
   const chapters = book?.chapters
   const verses = chapters?chapters[chapter_ID]:[[]]
@@ -201,7 +200,7 @@ export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
   const [referenceVerse, setReferenceVerse] = useState<string[]>([])
   
   const referencesForVerse = ()=>{
-    let refAddr = [...referenceVerse]
+    const refAddr = [...referenceVerse]
     refAddr[0] = refAddr[0].toUpperCase().includes("JUDG")?"JDG":refAddr[0]
     refAddr[0] = refAddr[0].toUpperCase().includes("JUDE")?"JDE":refAddr[0]
     refAddr[0] = refAddr[0].toUpperCase().includes("PHI")?"PHP":refAddr[0]
@@ -212,8 +211,8 @@ export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
   }
 
   const getVerseFromRef = (verseRef:string[])=>{
-    let bookNames = formatedBookNames(books)
-    let bookId = bookNames.indexOf(verseRef[0])
+    const bookNames = formatedBookNames(books)
+    const bookId = bookNames.indexOf(verseRef[0])
     if(bookId === -1) return null
     return books[bookId].chapters[Number(verseRef[1])-1][Number(verseRef[2])-1]
   }
@@ -320,7 +319,7 @@ export const getNormalizedText = (val:string)=>{
 }
 
 export const getSearchResult = (query:string, payload:searchPayload)=>{
-  const {bible, version} = payload
+  const {bible} = payload
   const results:searchResult[] = []
   const searchKeyphrase = getNormalizedText(query)
   const keyFragments = searchKeyphrase.split(" ")
@@ -331,15 +330,15 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
   console.log(keyRegPattern)
   function searchBibleAndCommitResult(){
     if(isEfficientSearchText(searchKeyphrase)){
-      let foundResults:searchResult[] = []
+      const foundResults:searchResult[] = []
       bible.forEach((book, b_ID)=>{
         book.chapters.forEach((chapter, c_ID)=>{
           chapter.forEach((verse, v_ID)=>{
             if(new RegExp(keyRegPattern, "gi").test(verse)){
-              let  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
+              const  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
                 return `<span class="highlight-text"><em>${match}</em></span>`
               })
-              let newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:0}
+              const newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:0}
               foundResults.push(newObj)
             }
             if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
@@ -354,7 +353,7 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
   return results
 }
 export const deepSearch = (query:string, payload:searchPayload)=>{
-  const {bible, version} = payload
+  const {bible} = payload
   let results:searchResult[] = []
   const keyFragments =  getNormalizedText(query.trim()).split(" ")
   return new Promise<searchResult[]>((resolve, reject)=>{
@@ -363,15 +362,15 @@ export const deepSearch = (query:string, payload:searchPayload)=>{
       keyFragments.forEach((fragment, id)=>{
         if(isEfficientSearchText(fragment)){
           if(id === 0){
-            let foundResults:searchResult[] = []
+            const foundResults:searchResult[] = []
             bible.forEach((book, b_ID)=>{
               book.chapters.forEach((chapter, c_ID)=>{
                 chapter.forEach((verse, v_ID)=>{
                   if(new RegExp(fragment, "gi").test(verse)){
-                    let  newText = verse.replace(new RegExp(fragment, "gi"), (match)=>{
+                    const  newText = verse.replace(new RegExp(fragment, "gi"), (match)=>{
                       return `<span class="highlight-text"><em>${match}</em></span>`
                     })
-                    let newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:1}
+                    const newObj = {"address":{bookName:book.name, book_ID:b_ID, chapter_ID:c_ID, verse_ID:v_ID}, "text":newText, rank:1}
                     foundResults.push(newObj)
                   }
                   if(bible.length-1 === b_ID && book.chapters.length-1 === c_ID && chapter.length-1 === v_ID){
@@ -383,10 +382,10 @@ export const deepSearch = (query:string, payload:searchPayload)=>{
           }else{
             results.forEach((result, r_ID)=>{
               if(new RegExp(fragment, "gi").test(result.text)){
-                let  newText = result.text.replace(new RegExp(fragment, "gi"), (match)=>{
+                const  newText = result.text.replace(new RegExp(fragment, "gi"), (match)=>{
                   return `<span class="highlight-text"><em>${match}</em></span>`
                 })
-                let editedObj = {...result, text:newText, rank:result.rank+1}
+                const editedObj = {...result, text:newText, rank:result.rank+1}
                 results = results.map(fR=>fR.address === editedObj.address?editedObj:fR)
               }
             })
@@ -399,7 +398,7 @@ export const deepSearch = (query:string, payload:searchPayload)=>{
     }
   })
 }
-type routes = {pathname:string|undefined, name:string|undefined, MenuIcon:OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; }|undefined, type:string}[];
+// type routes = {pathname:string|undefined, name:string|undefined, MenuIcon:OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; }|undefined, type:string}[];
 
 
 export const AppMenu = ()=>{
@@ -453,6 +452,8 @@ export const AppMenu = ()=>{
                     </ListItemButton>
                   </ListItem>
                 )
+              }else{
+                return <></>;
               }
             })}
           </List>

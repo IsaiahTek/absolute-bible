@@ -1,20 +1,20 @@
-import { Backspace, Search, SearchRounded } from "@mui/icons-material"
+import { SearchRounded } from "@mui/icons-material"
 import { Avatar, Box, Button, Card, CardHeader, Chip, Divider, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material"
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
-import { useEffect, useState } from "react"
-import { AppMenu, LoadingNotifier, bibleDefinition, deepSearch, isEfficientSearchText } from "./components"
+import { useEffect, useMemo, useState } from "react"
+import { LoadingNotifier, bibleDefinition, deepSearch, isEfficientSearchText } from "./components"
 import { fetchAndCommitBibleFile } from "../adapters"
-import { useNavigate } from "react-router-dom"
+// import { useNavigate } from "react-router-dom"
 import { SearchHistoryModel } from "../models/SearchHistoryModel"
 
 export const SearchPage = ()=>{
-    const searchHistory = new SearchHistoryModel()
+    const searchHistory = useMemo(()=>new SearchHistoryModel(), [])
     const [searchHistories, setSearchHistories] = useState<searchHistory[]>([])
     const [searchResults, setSearchResults] = useState<searchResult[]>([])
     const [searchText, setSearchText] = useState("")
-    const [selectedLanguage, setSelectedLanguage] = useState(bibleDefinition[0].language)
-    const [selectedVersion, setSelectedVersion] = useState(bibleDefinition[0].versions[0])
-    const [selectedBookName, setSelectedBookName] = useState<book["name"]|"all">("all")
+    const [selectedLanguage, ] = useState(bibleDefinition[0].language)
+    const [selectedVersion, ] = useState(bibleDefinition[0].versions[0])
+    const [selectedBookName, ] = useState<book["name"]|"all">("all")
     const [bible, setBible] = useState<book[]>([])
     const searchPayLoad:searchPayload = {bible:bible, version:selectedVersion}
 
@@ -22,7 +22,7 @@ export const SearchPage = ()=>{
     useEffect(()=>{
         fetchAndCommitBibleFile(selectedVersion, setBible);
         searchHistory.fetch().then(result=>{setSearchHistories(result); console.log(result)})
-    }, [])
+    }, [searchHistory, selectedVersion])
     const seePreviousSearchResult = (historyText:string)=>{
         setSearchResults([])
         setSearchText(historyText)
@@ -34,7 +34,7 @@ export const SearchPage = ()=>{
         if(searchText){
             deepSearch(searchText, searchPayLoad).then(r=>{
                 setSearchResults(r);
-                let sH:addSearchHistory = {...newSearchHistory, resultLength:r.length, timestamp:String(Date.now())}
+                const sH:addSearchHistory = {...newSearchHistory, resultLength:r.length, timestamp:String(Date.now())}
                 if(isEfficientSearchText(searchText)){
                     console.log(r.length)
                     searchHistory.add(sH).then(res=>{
@@ -50,10 +50,10 @@ export const SearchPage = ()=>{
         }
     }
     const newSearchHistory:addSearchHistory = {searchText: searchText, resultLength: searchResults.length, language: selectedLanguage, versionAbbrev: selectedVersion.abbreviation, bookName: selectedBookName?selectedBookName:"all", timestamp: ""}
-    useEffect(()=>{
-    }, [searchResults])
+    // useEffect(()=>{
+    // }, [searchResults])
     
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     return(
         <Box>
             {/* <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>

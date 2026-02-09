@@ -7,7 +7,7 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import referencesCollection from "../bible-cross-reference-json-master/combined_references_to_array.json"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
 import { Add, ArrowDropDown, Visibility, VisibilityOff } from '@mui/icons-material'
-import { Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemText, MenuItem, Select, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
+import { Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, MenuItem, Select, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
 
 import { FC, useEffect, useState } from "react";
 export const VersionGroups:FC<languageVersionsProps> = ({collection, selected, handleSelect})=>{
@@ -44,7 +44,7 @@ export const VersionGroups:FC<languageVersionsProps> = ({collection, selected, h
 // }
 export const Versions:FC<versionsProps> = ({collection, selected, handleSelect})=>{
     const getLastStringPart = (str:string)=>{
-      let arr = str.split("_")
+      const arr = str.split("_")
       return arr[arr.length-1]
     }
     return(<ButtonGroup>{collection.map(version =><Button variant={version.name===selected?.name?"contained":"outlined"} key={version.name} onClick={()=>handleSelect(version)}>{getLastStringPart(version.abbreviation)}</Button>)}</ButtonGroup>)
@@ -61,7 +61,7 @@ export const Languages:FC<languageProps> = ({collection, selected, handleSelect}
 }
 export const Books:FC<booksProps> = ({collection, selected, handleSelect})=>{
     const [openBooks, setOpenBooks] = useState(true)
-    const openBooksOnMobile = ((typeof selected != "undefined" && selected < 0) || openBooks)?true:false
+    const openBooksOnMobile = ((typeof selected !== "undefined" && selected < 0) || openBooks)?true:false
 
     return(
         <>
@@ -124,15 +124,15 @@ export const Search:FC<{bible:book[], version:version}> = ({bible, version})=>{
         setResults([])          // Empty the results when no search-text
         setFinishedSearching(false)
         if(searchKeyphrase.length > 4 && !unsearchedKeys.includes(searchKeyphrase)){
-            let foundResults:{address:{book:string, chapter_id:number, verse_id:number}, text:string}[] = []
+            const foundResults:{address:{book:string, chapter_id:number, verse_id:number}, text:string}[] = []
             bible.forEach((book, b_id)=>{
                 book.chapters.forEach((chapter, c_id)=>{
                     chapter.forEach((verse, v_id)=>{
                         if(new RegExp(keyRegPattern, "gi").test(verse)){
-                            let  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
+                            const  newText = verse.replace(new RegExp(keyRegPattern, "gi"), (match)=>{
                                 return `<span class="highlight-text"><em>${match}</em></span>`
                             })
-                            let newObj = {"address":{book:book.name, chapter_id:c_id, verse_id:v_id}, "text":newText}
+                            const newObj = {"address":{book:book.name, chapter_id:c_id, verse_id:v_id}, "text":newText}
                             foundResults.push(newObj)
                         }
                         if(bible.length-1 === b_id && book.chapters.length-1 === c_id && chapter.length-1 === v_id){
@@ -210,14 +210,14 @@ const VersionVerse:FC<{version:version, verseAddress:verseAddress}> = ({version,
     const fetchAndCommitBibleFile = ()=>{
         // this.setState({hasLoadedBible : false})
         if(version){
-          let usesAdapter = adapterNames.includes(version.abbreviation)
-          let baseUrl = (usesAdapter)?"./bible_versions/":"./bible_versions/bible-master/json/"
+          const usesAdapter = adapterNames.includes(version.abbreviation)
+          const baseUrl = (usesAdapter)?"./bible_versions/":"./bible_versions/bible-master/json/"
           fetch(`${baseUrl+version.abbreviation}.json`).then((response)=>{
             return response.json()
           }).then((data)=>{
             if(usesAdapter){
-              let abbreviation = version.abbreviation
-              let bible = bibleAdapters[adapterNames.findIndex(name => name === abbreviation)](data)
+              const abbreviation = version.abbreviation
+              const bible = bibleAdapters[adapterNames.findIndex(name => name === abbreviation)](data)
               setBooks(bible)
             }else{
               setBooks(data)
@@ -321,7 +321,7 @@ export const Tab:FC<{tabID:string, bibleAddress?:{language:language, version:ver
     // const [expandChaptersContainer, setExpandChaptersContainer] = useState(false)
     
     const referencesForVerse = ()=>{
-      let refAddr = [...referenceVerse]
+      const refAddr = [...referenceVerse]
       refAddr[0] = refAddr[0].toUpperCase().includes("JUDG")?"JDG":refAddr[0]
       refAddr[0] = refAddr[0].toUpperCase().includes("JUDE")?"JDE":refAddr[0]
       refAddr[0] = refAddr[0].toUpperCase().includes("PHI")?"PHP":refAddr[0]
@@ -332,8 +332,8 @@ export const Tab:FC<{tabID:string, bibleAddress?:{language:language, version:ver
     }
   
     const getVerseFromRef = (verseRef:string[])=>{
-      let bookNames = formatedBookNames(books)
-      let bookId = bookNames.indexOf(verseRef[0])
+      const bookNames = formatedBookNames(books)
+      const bookId = bookNames.indexOf(verseRef[0])
       if(bookId === -1) return null
       return books[bookId].chapters[Number(verseRef[1])-1][Number(verseRef[2])-1]
     }
@@ -355,16 +355,16 @@ export const Tab:FC<{tabID:string, bibleAddress?:{language:language, version:ver
     const fetchAndCommitBibleFile = ()=>{
       // this.setState({hasLoadedBible : false})
       if(selectedVersion){
-        let bibleNameIndex = adapterNames.indexOf(selectedVersion.abbreviation)
-        let usesAdapter = adapterNames.includes(selectedVersion.abbreviation)
-        let isXmlBible = usesAdapter && bibleAdapters[bibleNameIndex] === BibleJSON_FROM_XML
-        let baseUrl = (usesAdapter)?"./bible_versions/":"./bible_versions/bible-master/json/"
+        const bibleNameIndex = adapterNames.indexOf(selectedVersion.abbreviation)
+        const usesAdapter = adapterNames.includes(selectedVersion.abbreviation)
+        const isXmlBible = usesAdapter && bibleAdapters[bibleNameIndex] === BibleJSON_FROM_XML
+        const baseUrl = (usesAdapter)?"./bible_versions/":"./bible_versions/bible-master/json/"
         fetch(`${baseUrl+selectedVersion.abbreviation}${isXmlBible?".xml":".json"}`).then((response)=>{
           return isXmlBible?response.text():response.json()
         }).then((data)=>{
           if(usesAdapter){
-            let abbreviation = selectedVersion.abbreviation
-            let bible = bibleAdapters[adapterNames.findIndex(name => name === abbreviation)](data)
+            const abbreviation = selectedVersion.abbreviation
+            const bible = bibleAdapters[adapterNames.findIndex(name => name === abbreviation)](data)
             setBooks(bible)
           }else{
             setBooks(data)

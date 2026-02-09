@@ -1,14 +1,14 @@
 import bibleIndex from "./bible_versions/bible-master/json/index.json"
-import { AppMenu, Chapters, Languages, LoadingNotifier, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
-import { FC, Fragment, Suspense, useEffect, useState } from 'react'
-import { Box, Button, Card, CardActions, CardContent, CardMedia, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, SwipeableDrawer, Typography, createTheme} from '@mui/material'
-import { Add, ArrowDropDown, Close, Delete, Edit, History, HourglassBottomRounded, MenuSharp, MoreVert, Note, Remove, SearchRounded, Settings } from '@mui/icons-material'
+import { Chapters, Languages, LoadingNotifier, Tab, getVersionUsingLanguageAndAbbreviation} from './pages/components'
+import { FC, Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography, createTheme} from '@mui/material'
+import { Add, ArrowDropDown, Close, Edit, MoreVert, Remove } from '@mui/icons-material'
 
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics, logEvent } from "firebase/analytics";
-import { InstallPWA, LogInstallationSuccessEvent } from './pages/InstallApp'
+import { LogInstallationSuccessEvent } from './pages/InstallApp'
 import React from 'react'
 import { generateRandomKey } from "./string_helper"
 import { fetchAndCommitBibleFile, fetchBible } from "./adapters"
@@ -37,7 +37,7 @@ LogInstallationSuccessEvent(()=>logEvent(analytics, "pwa_installed", {"pwa_insta
 
 export const Versions:FC<versionsProps> = ({collection, selected, handleSelect})=>{
   const getLastStringPart = (str:string)=>{
-    let arr = str.split("_")
+    const arr = str.split("_")
     return arr[arr.length-1]
   }
   return(<Box>{collection.map(version =><Button sx={{marginRight:1, marginBottom:1}} variant={version.name===selected?.name?"contained":"outlined"} key={version.name} onClick={()=>handleSelect(version)}>{getLastStringPart(version.abbreviation)}</Button>)}</Box>)
@@ -63,31 +63,31 @@ export default function Home() {
   }
   , [])
   
-  const openedTab = new OpenedTab()
+  const openedTab = useMemo(() => new OpenedTab(), [])
 
   // This is done once (At each launch or refresh of this window)
-  const fetchAndCommitOpenedTabs = (offset?:number, amount?:number)=>{
+  const fetchAndCommitOpenedTabs = useCallback((offset?:number, amount?:number)=>{
     openedTab.fetch(offset, amount).then(async(result)=>{
       // fetchAndCommitBibleFile()
       console.log("FOUND TABS", result)
-      let computedTabsWithBooks = []
+      const computedTabsWithBooks = []
       for(let i = 0; i < result.length; i++){
-        let res = result[i]
-        let books = fetchBible(getVersionUsingLanguageAndAbbreviation(res.language, res.versionAbbrev)).then(r=>r);
+        const res = result[i]
+        const books = fetchBible(getVersionUsingLanguageAndAbbreviation(res.language, res.versionAbbrev)).then(r=>r);
         computedTabsWithBooks.push({books:(await books), ...res})
       }
       console.log("Computed Tabs", computedTabsWithBooks);
       setTabParamsCollection(computedTabsWithBooks)
-      if(result != undefined && result.length > 0){
+      if(result !== undefined && result.length > 0){
         handleSetActiveTab(localStorage.getItem("activeTabID")?String(localStorage.getItem("activeTabID")):result[0].tabID)
       }
       setIsLoading(false)
     })
-  }
+  }, [openedTab])
   const [isLoading, setIsLoading] = useState(true)
   useEffect(()=>{
     fetchAndCommitOpenedTabs()
-  }, [])
+  }, [fetchAndCommitOpenedTabs])
   // useEffect(()=>{
   // }, [])
   const [tabParamsCollection, setTabParamsCollection] = useState<resolvedOpenedTab[]>([])
@@ -249,7 +249,7 @@ const CreateTabDialog:FC<{setTabParams:Function, open:boolean}> = ({setTabParams
   const book = books[book_ID]
   const [openBooksDialog, setOpenBooksDialog] = useState(false)
   const chapters = book?book.chapters:[[]]
-  const verses = chapters?chapters[chapter_ID]:null 
+  // const verses = chapters?chapters[chapter_ID]:null 
 
   const chapterNumber = chapter_ID>=0?chapter_ID+1:null
   const bookName = book?book.name:""

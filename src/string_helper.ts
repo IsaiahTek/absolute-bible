@@ -1,14 +1,14 @@
-export const generateRandomKey = (length:number=12)=>{
-    let randomNumber = ()=>{
+export const generateRandomKey = (length=12)=>{
+    const randomNumber = ()=>{
         return (48 + Math.round(Math.random()*9))
     }
-    let randomUpperCaseAlphabet = ()=>{
+    const randomUpperCaseAlphabet = ()=>{
         return (65 + Math.round(Math.random()*25))
     }
-    let randomLowerCaseAlphabet = ()=>{
+    const randomLowerCaseAlphabet = ()=>{
         return (67 + Math.round(Math.random()*25))
     }
-    let pointer = ()=>Math.round(Math.random()*1)
+    const pointer = ()=>Math.round(Math.random()*1)
     let randomMatVal = ""
     for (let index = 0; index < length; index++) {
         randomMatVal += String.fromCharCode(

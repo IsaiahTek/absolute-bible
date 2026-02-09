@@ -26,6 +26,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "eslint:clean": "eslint src/**/*.{ts,tsx} --fix",
     "tauri": "tauri",
     "tauri-build": "tauri build",
     "build-icon": "tauri icon",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.1.0",
-    "@types/react": "^18.3.4"
+    "@types/react": "^18.3.4",
+    "eslint-plugin-unused-imports": "^4.4.1"
   }
 }

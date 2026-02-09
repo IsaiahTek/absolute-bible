@@ -2,9 +2,7 @@
 import { 
   HashRouter as Router,
   Routes,
-  Route,
-  Link,
-  useNavigate
+  Route
 } from 'react-router-dom';
 import { Box, Button, ThemeProvider, createTheme} from '@mui/material'
 import React from 'react'

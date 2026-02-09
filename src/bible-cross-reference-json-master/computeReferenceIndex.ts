@@ -10,7 +10,7 @@ export const formatedBookNames = (books:book[])=>{
   })
 }
 export const getReferencePointer = (bookName:string, chapterVal:number, verseVal:number, books:book[])=>{
-    let bookNames = formatedBookNames(books)
+    const bookNames = formatedBookNames(books)
     bookName = bookName.toUpperCase()==="JUD"?"JDG":bookName.toUpperCase()
     
     const bookAt = (bookName:string|number)=>bookNames?.indexOf(bookName.toString())

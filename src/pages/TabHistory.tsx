@@ -1,4 +1,3 @@
-import { QueryResult } from "@tauri-apps/plugin-sql";
 // import { BaseModel } from "../models/BaseModel";
 import { Box, Typography } from "@mui/material";
 import { useEffect } from "react";

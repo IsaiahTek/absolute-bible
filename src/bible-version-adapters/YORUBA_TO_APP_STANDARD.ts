@@ -11,11 +11,11 @@ type yoruba_bible = {
 }[]
 
 export default function NG_YORUBA(BIBLE_YORUBA:yoruba_bible):book[]{
-    let books:book[] = []
+    const books:book[] = []
     let chapters:chapters = []
     let verses:verses = []
     BIBLE_YORUBA.forEach(bible => {
-        let bookName = bible.bookName
+        const bookName = bible.bookName
         let chapter = 1
         bible.details.forEach(details => {
             if(details.chapter === chapter){
