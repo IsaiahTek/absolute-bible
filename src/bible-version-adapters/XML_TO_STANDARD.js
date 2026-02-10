@@ -1,4 +1,5 @@
 export const BibleJSON_FROM_XML = (bible)=>{
+    // eslint-disable-next-line no-undef
     const xmlDocument = new DOMParser().parseFromString(bible, "text/xml")
     const booksElement = Array.from(xmlDocument.getElementsByTagName("BIBLEBOOK"))
     return booksElement.map(book=>{

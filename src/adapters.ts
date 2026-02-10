@@ -2,6 +2,7 @@ import EN_ASV from "./bible-version-adapters/ASV_TO_APP_STANDARD"
 import { BibleJSON_FROM_XML } from "./bible-version-adapters/XML_TO_STANDARD"
 import NG_YORUBA from "./bible-version-adapters/YORUBA_TO_APP_STANDARD"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const adapters:{[x:string]:any} = {"asv":EN_ASV, "bible_esv":BibleJSON_FROM_XML, "yoruba-bible":NG_YORUBA, "bible_amp":BibleJSON_FROM_XML, "Bible_English_GNB":BibleJSON_FROM_XML, "Bible_English_MSG":BibleJSON_FROM_XML, "Bible_English_NLT": BibleJSON_FROM_XML, "Bible_English_NLV":BibleJSON_FROM_XML}
 
 export const fetchBible = async(selectedVersion:Version):Promise<Book[]>=>{

@@ -2,6 +2,7 @@
 
 const db = indexedDB.open("absolute_bible.db")
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DBResultObject = { results: any[] }
 type IDBDatabaseRef = { value: IDBDatabase | null }
 
