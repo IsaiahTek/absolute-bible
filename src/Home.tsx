@@ -334,7 +334,7 @@ const EditTabDialog: FC<EditTabDialogProps> = ({ tabParams, setTabParams, open }
 }
 
 // ------------------- TabMenu Component -------------------
-const TabMenu: FC<TabMenuProps> = ({ id, tabID, activeTabID, handleSetActiveTab, handleClickEditTab, handleDeleteTab }) => {
+const TabMenu: FC<TabMenuProps> = ({ id, tabID, handleClickEditTab, handleDeleteTab }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget)

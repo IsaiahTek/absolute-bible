@@ -20,7 +20,7 @@ export const Languages:FC<LanguageProps> = ({collection, selected, handleSelect}
     // const handleChange = 
     return(<FormControl size="small" sx={{width:"140px"}}>
         <InputLabel>Language</InputLabel>
-        <Select size="small" label="Language" onChange={(ev)=>handleSelect(ev.target.value)} value={selected}>{collection.map(({language}, id)=>
+        <Select size="small" label="Language" onChange={(ev)=>handleSelect(ev.target.value)} value={selected}>{collection.map(({language})=>
             <MenuItem key={language} value={language}>{language}</MenuItem>
         )}</Select>
         </FormControl>
@@ -46,7 +46,7 @@ export const Books:FC<BooksProps> = ({collection, selected, handleSelect})=>{
 
 export const Chapters:FC<ChaptersProps> = ({collection, selected, handleSelect})=>{
     return(
-        <>{collection.map((chapter, id)=><Chip key={id} color={selected===id?"primary":undefined} onClick={(ev)=>{
+        <>{collection.map((chapter, id)=><Chip key={id} color={selected===id?"primary":undefined} onClick={()=>{
             if(handleSelect)handleSelect(id)
         }} label={chapter.length?id+1:null} sx={{marginBottom:1, marginRight:1}}></Chip>)}
         </>
@@ -188,7 +188,7 @@ export const MultiVersionVerseGroup:FC<{selectedVersion: Version, verseAddress: 
         </>
     )
 }
-export const Tab:FC<ResolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName, books})=>{
+export const Tab:FC<ResolvedOpenedTab> = ({book_ID, chapter_ID, language, versionAbbrev, books})=>{
   // const [books, setBooks] = useState<book[]>([])
   // useEffect(()=>fetchAndCommitBibleFile(getVersionUsingLanguageAndAbbreviation(language, versionAbbrev), setBooks), [tabID])
   // const chapterNumber = chapter_ID + 1
@@ -381,7 +381,7 @@ export const deepSearch = (query:string, payload: SearchPayload)=>{
               })
             })
           }else{
-            results.forEach((result, r_ID)=>{
+            results.forEach((result)=>{
               if(new RegExp(fragment, "gi").test(result.text)){
                 const  newText = result.text.replace(new RegExp(fragment, "gi"), (match)=>{
                   return `<span class="highlight-text"><em>${match}</em></span>`

@@ -37,11 +37,13 @@ export const SearchPage = () => {
                 const sH: AddSearchHistory = { ...newSearchHistory, resultLength: r.length, timestamp: String(Date.now()) }
                 if (isEfficientSearchText(searchText)) {
                     console.log(r.length)
-                    SearchHistory.add(sH).then(res => {
+                    SearchHistory.add(sH).then(
+                        // res => {
                         // if(res.rowsAffected===1){
                         //     setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId}])
                         // }
-                    })
+                    // }
+                )
                 }
                 setTimeout(() => {
                     setIsSearching(false)

@@ -114,7 +114,8 @@ export abstract class BaseModel {
     public delete = async (id: number) => {
         return (await (this.store)).delete(id);
     }
-    public dropTable = async (id: number) => {
-        // 
-    }
+
+    // public dropTable = async (id: number) => {
+    //     // 
+    // }
 }
