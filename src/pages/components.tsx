@@ -8,14 +8,14 @@ import { FC, useEffect, useState } from "react";
 import { fetchAndCommitBibleFile } from "../adapters";
 import { useLocation, useNavigate } from 'react-router-dom';
 export const bibleDefinition = bibleIndex
-export const Versions:FC<versionsProps> = ({collection, selected, handleSelect})=>{
+export const Versions:FC<VersionsProps> = ({collection, selected, handleSelect})=>{
     const getLastStringPart = (str:string)=>{
       const arr = str.split("_")
       return arr[arr.length-1]
     }
     return(<ButtonGroup>{collection.map(version =><Button variant={version.name===selected?.name?"contained":"outlined"} key={version.name} onClick={()=>handleSelect(version)}>{getLastStringPart(version.abbreviation)}</Button>)}</ButtonGroup>)
 }
-export const Languages:FC<languageProps> = ({collection, selected, handleSelect})=>{
+export const Languages:FC<LanguageProps> = ({collection, selected, handleSelect})=>{
     // const handleChange = 
     return(<FormControl size="small" sx={{width:"140px"}}>
         <InputLabel>Language</InputLabel>
@@ -25,7 +25,7 @@ export const Languages:FC<languageProps> = ({collection, selected, handleSelect}
         </FormControl>
     )
 }
-export const Books:FC<booksProps> = ({collection, selected, handleSelect})=>{
+export const Books:FC<BooksProps> = ({collection, selected, handleSelect})=>{
     const [openBooks, setOpenBooks] = useState(true)
     const openBooksOnMobile = ((typeof selected !== "undefined" && selected < 0) || openBooks)?true:false
 
@@ -43,10 +43,10 @@ export const Books:FC<booksProps> = ({collection, selected, handleSelect})=>{
     )
 }
 
-export const Chapters:FC<chaptersProps> = ({collection, selected, handleSelect})=>{
+export const Chapters:FC<ChaptersProps> = ({collection, selected, handleSelect})=>{
     return(
         <>{collection.map((chapter, id)=><Chip key={id} color={selected===id?"primary":undefined} onClick={(ev)=>{
-            if(handleSelect)handleSelect(ev, id)
+            if(handleSelect)handleSelect(id)
         }} label={chapter.length?id+1:null} sx={{marginBottom:1, marginRight:1}}></Chip>)}
         </>
     )
@@ -55,7 +55,7 @@ export const Chapters:FC<chaptersProps> = ({collection, selected, handleSelect})
 const unsearchedKeys = ["is", "us", "as", "of", "the", "but", "by", "at", "to", "that", "be", "he", "and", "she", "to", "this"]
 export const isEfficientSearchText = (searchText:string)=>searchText.length > 2 && !unsearchedKeys.includes(searchText)
 
-export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = ({bible, version})=>{
+export const SearchInputWithResultDialog:FC<{bible: Book[], version?: Version}> = ({bible, version})=>{
     const [results, setResults] = useState<{address:{book:string, chapter_ID:number, verse_ID:number}, text:string}[]>([])
     const [searchKeyphrase, setSearchKeyphrase] = useState("")
     const [keyFragments, setKeyFragments] = useState<string[]>([])
@@ -109,7 +109,7 @@ export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = 
         <Box padding={2}>
             {!finishedSearching?<>
                 <Box padding={1} sx={{marginBottom:2}}>
-                    <Typography>Searching for "<span style={{color:"darkgreen"}}>{searchKeyphrase}</span>" in {version?.name}</Typography>
+                    <Typography>Searching for <span style={{color:"darkgreen"}}>{searchKeyphrase}</span> in {version?.name}</Typography>
                 </Box>
                 <Box sx={{textAlign:"center"}}>
                     <CircularProgress />
@@ -118,7 +118,7 @@ export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = 
                 results.length?
                     <>
                         <Box padding={1} sx={{borderBottom:"solid 1px green"}}>
-                            <Typography>Found "<span style={{color:"darkgreen"}}>{searchKeyphrase}</span>" in {results.length} verse{results.length>1?"s":null}</Typography>
+                            <Typography>Found <span style={{color:"darkgreen"}}>{searchKeyphrase}</span> in {results.length} verse{results.length>1?"s":null}</Typography>
                         </Box>
                         <Box sx={{maxHeight:"67vh", paddingTop:1, overflowY:"auto", backgroundColor:"#FEFEFE", tabIndex:2}}>
                         {results.map((result, id)=>
@@ -128,7 +128,7 @@ export const SearchInputWithResultDialog:FC<{bible:book[], version?:version}> = 
                     </>
                     :<>
                     {/* <CircularProgress /> */}
-                    <Typography variant="body1">No result found for "<span style={{color:"darkgreen"}}>{searchKeyphrase}</span>"</Typography>
+                    <Typography variant="body1">No result found for <span style={{color:"darkgreen"}}>{searchKeyphrase}</span></Typography>
                     </>
             }
         </Box>
@@ -148,9 +148,9 @@ export const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
       border: '1px solid #dadde9',
     },
   }));
-const VersionVerse:FC<{version:version, verseAddress:verseAddress}> = ({version, verseAddress})=>{
+const VersionVerse:FC<{version: Version, verseAddress: VerseAddress}> = ({version, verseAddress})=>{
     const {book_ID, chapter_ID, verse_ID} = verseAddress
-    const [books, setBooks] = useState<book[]>([])
+    const [books, setBooks] = useState<Book[]>([])
     const book = books[book_ID]
     const chapters = book?book.chapters:null
     const verse = chapters?chapters[chapter_ID][verse_ID]:null 
@@ -167,7 +167,7 @@ const VersionVerse:FC<{version:version, verseAddress:verseAddress}> = ({version,
         </>
     )
 }
-export const MultiVersionVerseGroup:FC<{selectedVersion:version, verseAddress:verseAddress}> = ({selectedVersion, verseAddress})=>{
+export const MultiVersionVerseGroup:FC<{selectedVersion: Version, verseAddress: VerseAddress}> = ({selectedVersion, verseAddress})=>{
   const versions = bibleIndex.find(da=>da.versions.includes(selectedVersion))?.versions
   return(
         <>
@@ -187,7 +187,7 @@ export const MultiVersionVerseGroup:FC<{selectedVersion:version, verseAddress:ve
         </>
     )
 }
-export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName, books})=>{
+export const Tab:FC<ResolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language, versionAbbrev, bookName, books})=>{
   // const [books, setBooks] = useState<book[]>([])
   // useEffect(()=>fetchAndCommitBibleFile(getVersionUsingLanguageAndAbbreviation(language, versionAbbrev), setBooks), [tabID])
   // const chapterNumber = chapter_ID + 1
@@ -307,7 +307,7 @@ export const Tab:FC<resolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
       </Box>
   )
 }
-export const getVersionUsingLanguageAndAbbreviation = (language:string, abbrev:string):version=>{
+export const getVersionUsingLanguageAndAbbreviation = (language:string, abbrev:string): Version=>{
   const versions = bibleIndex.find(a=>a.language===language)?.versions
   const version = versions?.find(v=>v.abbreviation===abbrev)
   return version?version:{name:"", abbreviation:""}
@@ -318,9 +318,9 @@ export const getNormalizedText = (val:string)=>{
   return val.replace(/\s{2,}/gi, " ")
 }
 
-export const getSearchResult = (query:string, payload:searchPayload)=>{
+export const getSearchResult = (query:string, payload: SearchPayload)=>{
   const {bible} = payload
-  const results:searchResult[] = []
+  const results: SearchResult[] = []
   const searchKeyphrase = getNormalizedText(query)
   const keyFragments = searchKeyphrase.split(" ")
   const keyRegPattern = keyFragments.reduce((acc, curVal, curInd, arr)=>{
@@ -330,7 +330,7 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
   console.log(keyRegPattern)
   function searchBibleAndCommitResult(){
     if(isEfficientSearchText(searchKeyphrase)){
-      const foundResults:searchResult[] = []
+      const foundResults: SearchResult[] = []
       bible.forEach((book, b_ID)=>{
         book.chapters.forEach((chapter, c_ID)=>{
           chapter.forEach((verse, v_ID)=>{
@@ -352,17 +352,17 @@ export const getSearchResult = (query:string, payload:searchPayload)=>{
   searchBibleAndCommitResult()
   return results
 }
-export const deepSearch = (query:string, payload:searchPayload)=>{
+export const deepSearch = (query:string, payload: SearchPayload)=>{
   const {bible} = payload
-  let results:searchResult[] = []
+  let results:SearchResult[] = []
   const keyFragments =  getNormalizedText(query.trim()).split(" ")
-  return new Promise<searchResult[]>((resolve, reject)=>{
+  return new Promise<SearchResult[]>((resolve, reject)=>{
     if(isEfficientSearchText(query)){
       // 
       keyFragments.forEach((fragment, id)=>{
         if(isEfficientSearchText(fragment)){
           if(id === 0){
-            const foundResults:searchResult[] = []
+            const foundResults:SearchResult[] = []
             bible.forEach((book, b_ID)=>{
               book.chapters.forEach((chapter, c_ID)=>{
                 chapter.forEach((verse, v_ID)=>{

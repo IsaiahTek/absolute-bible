@@ -14,14 +14,14 @@ export class SearchHistoryModel extends BaseModel{
     
     public fetch = async (offset=0, amount=30)=>{
         const queryObject = await this.prepareFetch(offset, amount);
-        return queryObject.results as searchHistory[];
+        return queryObject.results as SearchHistory[];
     }
     
-    public add = async (search:addSearchHistory)=>{
+    public add = async (search: AddSearchHistory)=>{
         (await this.store).add({searchText: search.searchText, language: search.language, versionAbbrev: search.versionAbbrev, bookName: search.bookName, timestamp: search.timestamp});
     }
 
-    public update = async (search: searchHistory)=>{
+    public update = async (search: SearchHistory)=>{
         return (await this.store).put({id: search.id, searchText: search.searchText, language: search.language, versionAbbrev: search.versionAbbrev, bookName: search.bookName, timestamp: search.timestamp});
     }
     

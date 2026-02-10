@@ -10,11 +10,11 @@ export class TabHistory extends BaseModel{
         const queryObject = await this.prepareFetch(offset, amount);
         return queryObject.results;
     }
-    public add = async(tabHistory:addTabHistory)=>{
+    public add = async(tabHistory: AddTabHistory)=>{
         (await this.store).add({tab: JSON.stringify(tabHistory.tab), date: tabHistory.date});
     }
-    public update = async(tabHistory: tabHistory) => {
-        (await this.store).put({id: tabHistory.id, tab: JSON.stringify(tabHistory.tab), date: tabHistory.date})
+    public update = async(tabHistory: AddTabHistory) => {
+        (await this.store).put({id: tabHistory.tab.tabID, tab: JSON.stringify(tabHistory.tab), date: tabHistory.date})
     }
     
 }

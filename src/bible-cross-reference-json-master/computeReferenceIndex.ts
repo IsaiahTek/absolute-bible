@@ -1,5 +1,5 @@
 import computedMap from "./computed_reference.map.json"
-export const formatedBookNames = (books:book[])=>{
+export const formatedBookNames = (books:Book[])=>{
   let bookNames = books?.map(book=>book.name.replaceAll(" ", "").substring(0,3).toUpperCase())
   return bookNames = bookNames?.map(book=>{
     book = book.toUpperCase().includes("JUDG")?"JDG":book
@@ -9,7 +9,7 @@ export const formatedBookNames = (books:book[])=>{
     return book
   })
 }
-export const getReferencePointer = (bookName:string, chapterVal:number, verseVal:number, books:book[])=>{
+export const getReferencePointer = (bookName:string, chapterVal:number, verseVal:number, books:Book[])=>{
     const bookNames = formatedBookNames(books)
     bookName = bookName.toUpperCase()==="JUD"?"JDG":bookName.toUpperCase()
     

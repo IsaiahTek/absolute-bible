@@ -4,7 +4,7 @@ import NG_YORUBA from "./bible-version-adapters/YORUBA_TO_APP_STANDARD"
 
 export const adapters:{[x:string]:any} = {"asv":EN_ASV, "bible_esv":BibleJSON_FROM_XML, "yoruba-bible":NG_YORUBA, "bible_amp":BibleJSON_FROM_XML, "Bible_English_GNB":BibleJSON_FROM_XML, "Bible_English_MSG":BibleJSON_FROM_XML, "Bible_English_NLT": BibleJSON_FROM_XML, "Bible_English_NLV":BibleJSON_FROM_XML}
 
-export const fetchBible = async(selectedVersion:version):Promise<book[]>=>{
+export const fetchBible = async(selectedVersion:Version):Promise<Book[]>=>{
   try {
     const usesAdapter = Object.keys(adapters).includes(selectedVersion.abbreviation); 
     const isXmlBible = usesAdapter && adapters[selectedVersion.abbreviation] === BibleJSON_FROM_XML
@@ -22,6 +22,6 @@ export const fetchBible = async(selectedVersion:version):Promise<book[]>=>{
   }
 }
 
-export const fetchAndCommitBibleFile = (selectedVersion:version, setBooks:Function)=>{
+export const fetchAndCommitBibleFile = (selectedVersion:Version, setBooks: (books: Book[])=>void)=>{
   fetchBible(selectedVersion).then(r=>setBooks(r))
 }

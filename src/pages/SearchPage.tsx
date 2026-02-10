@@ -8,21 +8,21 @@ import { fetchAndCommitBibleFile } from "../adapters"
 import { SearchHistoryModel } from "../models/SearchHistoryModel"
 
 export const SearchPage = ()=>{
-    const searchHistory = useMemo(()=>new SearchHistoryModel(), [])
-    const [searchHistories, setSearchHistories] = useState<searchHistory[]>([])
-    const [searchResults, setSearchResults] = useState<searchResult[]>([])
+    const SearchHistory = useMemo(()=>new SearchHistoryModel(), [])
+    const [searchHistories, setSearchHistories] = useState<SearchHistory[]>([])
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const [searchText, setSearchText] = useState("")
     const [selectedLanguage, ] = useState(bibleDefinition[0].language)
     const [selectedVersion, ] = useState(bibleDefinition[0].versions[0])
-    const [selectedBookName, ] = useState<book["name"]|"all">("all")
-    const [bible, setBible] = useState<book[]>([])
-    const searchPayLoad:searchPayload = {bible:bible, version:selectedVersion}
+    const [selectedBookName, ] = useState<Book["name"]|"all">("all")
+    const [bible, setBible] = useState<Book[]>([])
+    const searchPayLoad:SearchPayload = {bible:bible, version:selectedVersion}
 
     const [isSearching, setIsSearching] = useState(false)
     useEffect(()=>{
         fetchAndCommitBibleFile(selectedVersion, setBible);
-        searchHistory.fetch().then(result=>{setSearchHistories(result); console.log(result)})
-    }, [searchHistory, selectedVersion])
+        SearchHistory.fetch().then(result=>{setSearchHistories(result); console.log(result)})
+    }, [SearchHistory, selectedVersion])
     const seePreviousSearchResult = (historyText:string)=>{
         setSearchResults([])
         setSearchText(historyText)
@@ -34,10 +34,10 @@ export const SearchPage = ()=>{
         if(searchText){
             deepSearch(searchText, searchPayLoad).then(r=>{
                 setSearchResults(r);
-                const sH:addSearchHistory = {...newSearchHistory, resultLength:r.length, timestamp:String(Date.now())}
+                const sH:AddSearchHistory = {...newSearchHistory, resultLength:r.length, timestamp:String(Date.now())}
                 if(isEfficientSearchText(searchText)){
                     console.log(r.length)
-                    searchHistory.add(sH).then(res=>{
+                    SearchHistory.add(sH).then(res=>{
                         // if(res.rowsAffected===1){
                         //     setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId}])
                         // }
@@ -49,7 +49,7 @@ export const SearchPage = ()=>{
             })
         }
     }
-    const newSearchHistory:addSearchHistory = {searchText: searchText, resultLength: searchResults.length, language: selectedLanguage, versionAbbrev: selectedVersion.abbreviation, bookName: selectedBookName?selectedBookName:"all", timestamp: ""}
+    const newSearchHistory: AddSearchHistory = {searchText: searchText, resultLength: searchResults.length, language: selectedLanguage, versionAbbrev: selectedVersion.abbreviation, bookName: selectedBookName?selectedBookName:"all", timestamp: ""}
     // useEffect(()=>{
     // }, [searchResults])
     
