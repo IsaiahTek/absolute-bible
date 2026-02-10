@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
+import { Grid } from '@mui/material'
 import combinedReferences from "../bible-cross-reference-json-master/combined_references_to_array.json"
 import { formatedBookNames } from '../bible-cross-reference-json-master/computeReferenceIndex'
 import { ArrowDropDown, HourglassBottomRounded, MenuSharp, Note, SearchRounded, Settings, Visibility, VisibilityOff, Home, Help, Info, Support } from '@mui/icons-material'
-import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SwipeableDrawer, TextField, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
+import { Avatar, Box, Button, ButtonGroup, Card, Chip, CircularProgress, Dialog, DialogActions, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SwipeableDrawer, TextField, Tooltip, type TooltipProps, Typography, styled, tooltipClasses } from "@mui/material";
 import bibleIndex from "../bible_versions/bible-master/json/index.json"
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { fetchAndCommitBibleFile } from "../adapters";
 import { useLocation, useNavigate } from 'react-router-dom';
 export const bibleDefinition = bibleIndex
@@ -229,13 +229,13 @@ export const Tab:FC<ResolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
   return (
       <Box>
         <Grid container>
-          <Grid sm={12} sx={{alignContent:"flex-start"}}>
+          <Grid size={{ sm:12 }} sx={{alignContent:"flex-start"}}>
             
             {(chapters) ?
             <>
               <Box sx={{position:"relative", zIndex:0, marginTop:1}}>
                 {verses?<Grid container marginRight={2} marginLeft={2}>
-                  <Grid md={6.7}>
+                  <Grid size={{ md: 6.7 }}>
                     <Box>
                       <Card variant='outlined' sx={{maxHeight:"85vh", width:"100%", overflowY:"auto"}}>
                         {verses.map((verse, id)=>
@@ -285,7 +285,7 @@ export const Tab:FC<ResolvedOpenedTab> = ({tabID, book_ID, chapter_ID, language,
                       </Card>
                     </Box>
                   </Grid>
-                  <Grid xs={12} md={5} mdOffset={.3}>
+                  <Grid size={{ xs: 12, md: 5 }} offset={{ md: .3 }}>
                     <Box sx={{width:"100%"}}>
                       <MultiVersionVerseGroup selectedVersion={getVersionUsingLanguageAndAbbreviation(language, versionAbbrev)} verseAddress={{book_ID:book_ID, chapter_ID:chapter_ID, verse_ID:verse_ID}} />
                     </Box>

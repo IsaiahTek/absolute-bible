@@ -1,11 +1,11 @@
 import bibleIndex from "./bible_versions/bible-master/json/index.json"
 import { Chapters, Languages, LoadingNotifier, Tab, getVersionUsingLanguageAndAbbreviation } from './pages/components'
-import { FC, Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { type FC, Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, ListItemIcon, Menu, MenuItem, Typography, createTheme } from '@mui/material'
 import { Add, ArrowDropDown, Edit, MoreVert, Remove } from '@mui/icons-material'
-import { initializeApp } from "firebase/app";
-import { getAnalytics, logEvent } from "firebase/analytics";
-import { LogInstallationSuccessEvent } from './pages/InstallApp'
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics, logEvent } from "firebase/analytics";
+// import { LogInstallationSuccessEvent } from './pages/InstallApp'
 import React from 'react'
 import { generateRandomKey } from "./string_helper"
 import { fetchAndCommitBibleFile, fetchBible } from "./adapters"
@@ -13,19 +13,19 @@ import { useNavigate } from "react-router-dom"
 import { OpenedTab } from "./models/OpenedTabModel"
 
 // Firebase config
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: "absolute-bible.firebaseapp.com",
-  projectId: "absolute-bible",
-  storageBucket: "absolute-bible.appspot.com",
-  messagingSenderId: "127365858543",
-  appId: "1:127365858543:web:81bbfbf019fecc1e9c071a",
-  measurementId: "G-QJFGX9BG5T"
-};
+// const firebaseConfig = {
+//   apiKey: process.env.REACT_APP_API_KEY,
+//   authDomain: "absolute-bible.firebaseapp.com",
+//   projectId: "absolute-bible",
+//   storageBucket: "absolute-bible.appspot.com",
+//   messagingSenderId: "127365858543",
+//   appId: "1:127365858543:web:81bbfbf019fecc1e9c071a",
+//   measurementId: "G-QJFGX9BG5T"
+// };
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-LogInstallationSuccessEvent(() => logEvent(analytics, "pwa_installed", { "pwa_installed": true }))
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
+// LogInstallationSuccessEvent(() => logEvent(analytics, "pwa_installed", { "pwa_installed": true }))
 
 // ------------------- Types -------------------
 type versionsProps = {

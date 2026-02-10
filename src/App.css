@@ -1,64 +1,42 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
 
-body::-webkit-scrollbar{
-  outline: unset;
-  width:9px;
-  height: 9px;
-  box-shadow: inset #304e00 0px 0px 5px;
-  background-color: #adcc7e;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
 }
-/* body:hover::-webkit-scrollbar{
-  outline: unset;
-  width:9px;
-  box-shadow: inset #304e00 0px 0px 5px;
-  background-color: #538900;
-} */
-body::-webkit-scrollbar-thumb{
-  background-color: #304e00;
-  border-radius: 9px;
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
 }
-div::-webkit-scrollbar-thumb{
-  background-color: transparent;
-  border-radius: 9px;
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
-div:hover::-webkit-scrollbar-thumb{
-  background-color: #304e00;
-  border-radius: 9px;
-}
-div::-webkit-scrollbar{
-  width: 5px;
-  height: 5px;
-  outline: unset;
-  box-shadow: transparent;
-  background-color: transparent;
-}
-div:hover::-webkit-scrollbar{
-  outline: unset;
-  width:5px;
-  height: 5px;
-  box-shadow: inset #304e00 0px 0px 5px;
-  background-color: #538900;
-}
-div::-webkit-scrollbar-thumb{
-  background-color: transparent;
-  border-radius: 5px;
-}
-div:hover::-webkit-scrollbar-thumb{
-  background-color: #304e00;
-  border-radius: 5px;
-}
-body::-webkit-scrollbar-track, div::-webkit-scrollbar-track{
-  background-color: transparent;
-}
-body:hover::-webkit-scrollbar-track, div:hover::-webkit-scrollbar-track{
-  background-color: #cfeca2;
-}
-.hide-on-mobile{
-  display: none;
-}
-/* .hide-on-desktop{
 
-} */
-@media (min-width:545px){
-  .hide-on-mobile{display: initial;}
-  .hide-on-desktop{display: none;}
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
 }
