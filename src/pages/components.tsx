@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Grid } from '@mui/material'
 import combinedReferences from "../bible-cross-reference-json-master/combined_references_to_array.json"

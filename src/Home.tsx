@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import bibleIndex from "./bible_versions/bible-master/json/index.json"
 import { Chapters, Languages, LoadingNotifier, Tab, getVersionUsingLanguageAndAbbreviation } from './pages/components'
 import { type FC, Fragment, useCallback, useEffect, useMemo, useState } from 'react'
@@ -90,7 +91,11 @@ export default function Home() {
   const [activeTabID, setActiveTabID] = useState("")
   const [isCreateNewTab, setIsCreateNewTab] = useState(true)
   const [openTabDialog, setOpenTabDialog] = useState(false)
-
+  
+  const handleSetActiveTab = (tabID: string) => {
+    setActiveTabID(tabID)
+    localStorage.setItem("activeTabID", tabID)
+  }
   const fetchAndCommitOpenedTabs = useCallback((offset?: number, amount?: number) => {
     openedTab.fetch(offset, amount).then(async (result) => {
       const computedTabsWithBooks = []
@@ -107,10 +112,6 @@ export default function Home() {
 
   useEffect(() => { fetchAndCommitOpenedTabs() }, [fetchAndCommitOpenedTabs])
 
-  const handleSetActiveTab = (tabID: string) => {
-    setActiveTabID(tabID)
-    localStorage.setItem("activeTabID", tabID)
-  }
 
   const handleAddTabToDB = (tab?: AddOpenedTab | undefined) => {
     if (tab) {
