@@ -158,7 +158,7 @@ export default function Home() {
   const getVersionShortName = (name: string) => name.split("_").pop()?.toUpperCase()
 
   return (
-    <Box>
+    <Box sx={{ backgroundColor: theme.palette.background.default }}>
       {isLoading ?
         <LoadingNotifier /> :
         tabParamsCollection.length ?
@@ -177,11 +177,11 @@ export default function Home() {
             <Box><IconButton color="primary" onClick={handleAddTab}><Add /></IconButton></Box>
           </Box>
           :
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", height: "100vh" }}>
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100vw", height: "100vh" }}>
             <Box sx={{ width: "360px", maxWidth: "90%" }}>
               <Box sx={{ marginBottom: 10 }}>
                 <Typography variant="h4" textAlign="center" style={{ color: theme.palette.primary.main, fontWeight: "bold" }}>Absolute Bible</Typography>
-                <Typography textAlign="center" variant="body2">Multilingual & Multi-version such as:</Typography>
+                <Typography textAlign="center" variant="body2" color="green">Multilingual & Multi-version such as:</Typography>
                 <Typography color="secondary.light" textAlign="center" variant="subtitle2">MSG | AMP | NLT ...</Typography>
               </Box>
               <Card>

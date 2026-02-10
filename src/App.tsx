@@ -17,7 +17,7 @@ function DynamicTopMenu(){
   if(!currentPageName.endsWith("/")){
     console.log(currentPageName)
     return (
-      <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
+      <Box sx={{backgroundColor:"red", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
         <AppMenu />
         <Box sx={{backgroundColor:"white", paddingY:.8, position:"fixed", zIndex:5, top:0, left:60, width:"90vw"}}>
             <Button size="small" onClick={()=>window.history.back()}><Backspace fontSize="small" sx={{marginRight:1}} /> Back</Button>

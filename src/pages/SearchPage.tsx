@@ -1,5 +1,5 @@
 import { SearchRounded } from "@mui/icons-material"
-import { Avatar, Box, Button, Card, CardHeader, Chip, Divider, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material"
+import { Avatar, Box, Button, Card, CardHeader, Chip, createTheme, Divider, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material"
 import { Grid } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { LoadingNotifier, bibleDefinition, deepSearch, isEfficientSearchText } from "./components"
@@ -28,6 +28,13 @@ export const SearchPage = () => {
         setSearchText(historyText)
         deepSearch(historyText, searchPayLoad).then(r => setSearchResults(r))
     }
+
+    const theme = useMemo(() => createTheme({
+        palette: {
+            primary: { main: "#304e00", dark: "#1c2e00", light: "#cfeca2" },
+            secondary: { main: "#00d5d1", dark: "#00aba7", light: "#bbaba7" }
+        }
+    }), [])
     const handleGetSearchResults = () => {
         setIsSearching(true)
         setSearchResults([])
@@ -42,8 +49,8 @@ export const SearchPage = () => {
                         // if(res.rowsAffected===1){
                         //     setSearchHistories([...searchHistories, {...sH, id:res.lastInsertId}])
                         // }
-                    // }
-                )
+                        // }
+                    )
                 }
                 setTimeout(() => {
                     setIsSearching(false)
@@ -57,7 +64,7 @@ export const SearchPage = () => {
 
     // const navigate = useNavigate()
     return (
-        <Box>
+        <Box sx={{ backgroundColor: theme.palette.background.default }}>
             {/* <Box sx={{backgroundColor:"white", display:"flex", paddingLeft:2, alignItems:"center", overflowX:"auto", marginBottom:1}}>
                 <AppMenu />
                 <Box sx={{backgroundColor:"white", paddingY:.8, position:"fixed", zIndex:5, top:0, left:60, width:"90vw"}}>
